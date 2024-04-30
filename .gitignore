@@ -439,6 +439,7 @@ FodyWeavers.xsd
 
 # Build directories
 out/
+build/
 
 # Ninja build files
 .ninja_deps
