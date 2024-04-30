@@ -445,6 +445,7 @@ build/
 .ninja_deps
 .ninja_log
 build.ninja
+.ninja
 
 # CMake files
 CMakeCache.txt
