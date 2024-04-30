@@ -437,6 +437,17 @@ FodyWeavers.xsd
 !.vscode/extensions.json
 *.code-workspace
 
+# Ignore CMake and Ninja build files
+/out/
+build.ninja
+.ninja_deps
+.ninja_log
+*.cmake
+!CMakeLists.txt
+/CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
 # Local History for Visual Studio Code
 .history/
 
