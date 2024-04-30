@@ -1,0 +1,339 @@
+:root {
+  /* --light: #f0f0f0; */
+  --dark: #808080;
+  /* --light: #ECDAB6;
+  --dark: #AE8A65; */
+  --light: #3e3c37; 
+  --square: 6vw;
+  --coords-font: "helvetica neue", helvetica, arial, sans-serif;
+}
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Board rows */
+#board-container {
+  background-color: var(--light);
+  z-index: -5;
+  width: fit-content;
+  height: auto;
+}
+#board {
+  list-style: none;
+  position: absolute;
+  top: 8.5%;
+  left: 38%; 
+  /* change to left 30% and add like stuff to the right */
+}
+#board li {
+  display: inline-block;
+  padding:0;
+  margin:0;
+  vertical-align: top;
+  height: var(--square);
+  width: var(--square);
+} 
+.square {
+  width: var(--square);
+  height: var(--square);
+  position: relative;
+  font-size: calc(var(--square) / 4.3);
+  z-index: 1;
+  user-select: none;
+}
+.light {
+  background-color: var(--light);
+  color: var(--dark);
+}
+.dark {
+  background-color: var(--dark);
+  color: var(--light);
+}
+/* Coordinates */
+.column {
+  position: absolute;
+  bottom: 1%;
+  right: 4%;
+}
+.row {
+  position: absolute;
+  top: 1%;
+  left: 2%;
+}
+/* Peices */
+.column, .row {
+  user-select: none;
+  background-color: transparent;
+}
+.occupied {
+  cursor: grab;
+}
+.pieces {
+  width:inherit;
+  height: auto;
+  z-index: 3;
+  user-select: none;
+  position: relative;
+}
+.pieces {
+  cursor: grab;
+}
+/* .pieces:active {
+  cursor: grabbing;
+} */
+/* Highlight */
+.square {
+  z-index: 1;
+}
+.square.highlighted::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(255, 41, 41, 0.65);
+  pointer-events: none; 
+  z-index: 1;
+}
+
+#myCanvas {
+  position: absolute;
+  height: calc(8 * var(--square));
+  width: calc(8 * var(--square));
+  z-index: 10000;
+  pointer-events: none;
+
+  /* JUST FOR NOW UNTIL I RETURN TO ARROW */
+  display: none;
+
+}
+#flipBoardButton {
+  display: none;
+}
+.square.displayedMoves::after {
+  content: "";
+  position: absolute;
+  background-color: rgba(54, 54, 54, 0.25);
+  pointer-events: none;
+  z-index: 5;
+  border-radius: 1000%;
+  width: 35%;
+  height: 35%;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+}
+@keyframes borderFlash {
+  0% {
+    box-shadow: inset 0 0 0 0.4vw white;
+  }
+}
+.square.selected {
+  animation: borderFlash 0.3s ease;
+  background-color: rgba(219, 223, 141, 1); 
+}
+
+.square.displayedMoves:hover::after {
+  background-color: rgba(255, 41, 41, 0.65);
+ 
+}
+.lastmove::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(219, 223, 141, 0.7); 
+  pointer-events: none; 
+  z-index: 1 ;
+}
+.modal {
+  display: none;
+  position: absolute;
+  left: 38%;
+  top: 8.5%;
+  width: calc(8 * var(--square));
+  height: calc(8 * var(--square));
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0,0,0,0.5);
+}
+.selection {
+  display: flex;
+  justify-content: center;
+  gap: 2vw;
+}
+#game-over {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  font-size: calc(var(--square)/2.75);
+  background-color: rgba(0,0,0,0.2);
+  user-select: none;
+
+}
+/* #game-over {
+  display:flex;
+} */
+#game-over-background {
+  box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) ;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #4d4d4d;
+  border-radius: 11%;
+  width: calc(4*var(--square));
+  height: calc(3*var(--square));
+}
+#startNewGame{
+  position: absolute;
+  bottom: 37.5%;
+  justify-self: center;
+  background-color: var(--light);
+  color:var(--dark);
+  border: 0.001vw solid var(--dark);
+  border-radius: 8%;
+  padding: 1.5% 2% 1.5% 2%;
+}
+#startNewGame:hover {
+  background-color: var(--dark);
+  color: var(--light);
+  border-color: var(--light);
+}
+#end-message {
+  box-shadow: 0 -0.8vw 1500vw rgba(128, 128, 128, 1), 0 0.8vw 1500vw rgba(128, 128, 128, 1);
+  position: relative;
+  bottom:16.85%;
+  text-align: center;
+  background-color: var(--dark);
+  color: var(--light);
+  width: inherit;
+  padding-top: 2%;
+  padding-bottom: 2%;
+
+}
+
+
+/* Header Formatting */
+head {
+  margin: 0% 0% 0% 0%;
+}
+/* Body Formatting */
+body {
+  margin: 0px 0px 0px 0px;
+  background-color: #262421;
+  height: 100%;
+}
+/* Navigation Bar */
+  /* Logo */
+.nav #logo {
+  width: 22.82vw  ;
+  height: auto;
+  overflow: hidden;
+  margin-bottom: -0.399vw;
+  position: absolute;
+  left: -1vw;
+  top: 0vw;
+  background-color: #808080;
+}
+/* File Paths */
+.nav ul {
+  list-style-type: none; 
+  font-size: 2vw;
+  background-color: #4d4d4d;
+  font-family: 'Open Sans', sans-serif;
+  text-align: left;
+  overflow: hidden;
+  margin: 20.37% 78% 0% 0%;
+}
+.nav li {
+  float: top;
+  width: 22.82vw;
+}
+.nav li a {
+  display: block;
+  color: #cccccc;
+  padding: 3vw 3vw 3vw 3vw;
+  text-decoration: none;
+  margin-left: -3.8vw;
+  text-align: center;
+}
+.nav li a:hover,.nav a.active {
+  color: #cccccc;
+  background-color: #262421;
+}
+#blank{
+  background-color: #4d4d4d;
+  padding-bottom: 100%;
+}
+/* Logo Link Padding */
+#logo-link {
+  padding: 0%;
+}
+#name {
+  position: absolute;
+  color: #e5e5e5;
+  top: -1.3vw;
+  z-index: 1;
+  left: 1.4vw;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 2.5vw;
+  text-align: center;
+}
+/* Chess Board Background Image And Its Elements*/
+#fake-board {
+  width: 45vw;
+  height: auto;
+  position: absolute;
+  top: 5vw;
+  left: 40vw;
+}
+#computer {
+  width: 14vw;
+  height: auto;
+  position: absolute;
+  top: 35vw;
+  left: 41.55vw;
+  border: 0.23vw solid #4d4d4d;
+  border-radius: 1vw;
+}
+#pawn {
+  width: 14vw;
+  height: auto;
+  position: absolute;
+  top: 16vw;
+  left: 41.55vw;
+  border: 0.23vw solid #4d4d4d;
+  border-radius: 1vw;
+}
+#friend,#solo {
+  position: absolute;
+  text-decoration: none;
+  color: #ebdfab;  
+  background-color: #4d4d4d;
+  font-size: 3.5vw;
+  padding: 2vw;
+  border: 0.33vw solid #ebdfab;
+  border-radius: 2vw;
+}
+#friend {
+  top: 16.5vw;
+  right: 16.25vw;
+}
+#solo {
+  top: 35.25vw;
+  right: 15vw;
+}
+#friend:hover, #solo:hover {
+  color:#4d4d4d;
+  background-color: #ebdfab;
+  border: 0.23vw solid #4d4d4d;
+}

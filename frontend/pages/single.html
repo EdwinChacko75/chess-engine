@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Single Player</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    
+    <script type="module" src="../scripts/singleplayer.js"></script>
+    <script type="module" src="../scripts/game.js"></script>
+    <script type="module" src="../scripts/player.js"></script>
+    
+    <!-- Website Fonts Style -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro&display=swap">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans&display=swap" rel="stylesheet">
+
+
+</head>
+<body>
+    <!-- Side Navigation Bar -->
+    <div class="nav">
+        <ul>
+            <li><a href="../index.html" id="logo-link"><img id="logo"src="../img/miscellaneous/logo.png"></a></li>
+            <li><a href="./single.html" > <strong>Single Player</strong></a></li>
+            <li><a href="./multi.html"> <strong>Multi-player</strong> </a></li>
+            <li><a href="./analysis.html"> <strong>Analysis Board</strong> </a></li>
+            <li><a href="./puzzles.html"> <strong>Puzzles</strong> </a></li>
+            <li id="blank"></li>
+        </ul>
+    </div>
+    <div id="board-container">
+        <canvas id="myCanvas" >Your browser does not support the canvas tag.</canvas>
+
+        <ul id="board">
+            <button id="flipBoardButton">Flip Board</button>
+
+        </ul>  
+        <div id="promotion-modal-white" class="modal">
+            <div class="selection">
+                <img src="../img/chesspieces/wikipedia/whiteQueen.png" id="Queen" alt="Queen" data-piece="Queen">
+                <img src="../img/chesspieces/wikipedia/whiteRook.png" id="Rook" alt="Rook" data-piece="Rook" >
+                <img src="../img/chesspieces/wikipedia/whiteBishop.png" id="Bishop" alt="Bishop" data-piece="Bishop" >
+                <img src="../img/chesspieces/wikipedia/whiteKnight.png" id="Knight" alt="Knight" data-piece="Knight" >
+            </div>
+            <button id="cancel">Cancel</button>
+        </div>
+        <div id="promotion-modal-black" class="modal">
+            <div class="selection">
+                <img src="../img/chesspieces/wikipedia/blackQueen.png" id="Queen" alt="Queen" data-piece="Queen">
+                <img src="../img/chesspieces/wikipedia/blackRook.png" id="Rook" alt="Rook" data-piece="Rook" >
+                <img src="../img/chesspieces/wikipedia/blackBishop.png" id="Bishop" alt="Bishop" data-piece="Bishop" >
+                <img src="../img/chesspieces/wikipedia/blackKnight.png" id="Knight" alt="Knight" data-piece="Knight" >
+            </div>
+            <button id="closePromotionModal">Cancel</button>
+        </div>
+        <div id="game-over" class="modal">
+            <div id="game-over-background">
+                <p id="end-message">Single Player</p>
+                <button id="startNewGame">New Game</button>
+            </div>
+        </div>
+    </div>
+
+
+
+</body>
+</html>
