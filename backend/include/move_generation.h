@@ -27,6 +27,7 @@ constexpr Move castlingMask = (1UL << 18);
 constexpr Move pieceTypeMask = (15UL << 19);
 constexpr Move capturedPieceMask = (15UL << 23);
 
+
 void insertMove(Move*& moves, const Move move, int& size, int& moveIndex);
 
 void addMovesFromBitboard(Bitboard pieceMoves, const Bitboards bitboards, const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex);
@@ -38,8 +39,8 @@ void generatePawnMoves(const Bitboards& bitboards, Move*& moves, const GameState
 void generateKnightMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
 
 void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
+void generateCastlingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
 
-void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
 
 
 void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);

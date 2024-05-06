@@ -34,7 +34,6 @@ static void promotionMoves(Move*& moves, const Move move, int& size, int& moveIn
 
 static void insertMove(Move*& moves, const Move move, int& size, int& moveIndex) {
 	if (moveIndex == size) {
-		cout<< "resizing" << endl;
 		int newSize = size * 2;
 		Move* newMoves = new Move[newSize];
 
@@ -77,6 +76,7 @@ Move* generateMoves(const Bitboards& bitboards, const GameState gameState) {
 	generateBishopMoves(bitboards, moves, gameState, size, moveIndex);
 	generateRookMoves(bitboards, moves, gameState, size, moveIndex);
 	generateQueenMoves(bitboards, moves, gameState, size, moveIndex);
+	
 	printMoves(moves, moveIndex);
 	return moves;
 }
@@ -132,6 +132,43 @@ void generateDiagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const in
 	}
 }
 
+void generateCastlingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+	// white kingside castle
+	if (gameState & whiteKingsideCastleMask && gameState & turnMask) {
+		Move move = 3;
+		move |= 1 << 6;
+		move |= 5 << 19;
+		move |= 1 << 18;
+		insertMove(moves, move, size, moveIndex);
+
+	}
+	// white queenside castle
+	if (gameState & whiteQueensideCastleMask && gameState & turnMask) {
+		Move move = 3;
+		move |= 5 << 6;
+		move |= 5 << 19;
+		move |= 1 << 18;
+		insertMove(moves, move, size, moveIndex);
+	}
+	// black kingside castle
+	if (gameState & blackKingsideCastleMask && !(gameState & turnMask)) {
+		Move move = 59;
+		move |= 61 << 6;
+		move |= 5 << 19;
+		move |= 1 << 18;
+		insertMove(moves, move, size, moveIndex);
+
+	}
+	// black queenside castle
+	if (gameState & blackQueensideCastleMask && !(gameState & turnMask)) {
+		Move move = 59;
+		move |= 57 << 6;
+		move |= 5 << 19;
+		move |= 1 << 18;
+		insertMove(moves, move, size, moveIndex);
+	}
+}
+
 void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
 	Bitboard queens = (gameState & turnMask) ? bitboards.whiteQueens : bitboards.blackQueens;
 	const Bitboard friendlyPieces = (gameState & turnMask) ? bitboards.whitePieces : bitboards.blackPieces;
@@ -146,8 +183,6 @@ void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameStat
 		generateOrthagonalMoves(possibleMoves, blockers, queenPosition, bitboards.allPieces);
 
 		possibleMoves &= ~friendlyPieces;
-
-		printBoard(possibleMoves);
 
 		addMovesFromBitboard(possibleMoves, bitboards, queenPosition, bitboards.allPieces, moves, size, moveIndex);
 
@@ -168,11 +203,13 @@ void generateRookMoves(const Bitboards& bitboards, Move*& moves, const GameState
 		generateOrthagonalMoves(possibleMoves, blockers, rookPosition, bitboards.allPieces);
 
 		possibleMoves &= ~friendlyPieces;
-		printBoard(possibleMoves);
+		//printBoard(possibleMoves);
 		addMovesFromBitboard(possibleMoves, bitboards, rookPosition, bitboards.allPieces, moves, size, moveIndex);
 
 		rooks &= rooks - 1;
 	}
+
+	
 }
 
 void generateBishopMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
@@ -215,15 +252,16 @@ void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState
 	Bitboard king = (gameState & turnMask) ? bitboards.whiteKing : bitboards.blackKing;
 	const Bitboard friendlyPieces = (gameState & turnMask) ? bitboards.whitePieces : bitboards.blackPieces;
 
-	
 	int kingPosition = lsb(king);
 	if (kingPosition == -1) return;
+
 	Bitboard possibleMoves = KING_MOVES[kingPosition] & ~friendlyPieces;
 
 	addMovesFromBitboard(possibleMoves, bitboards, kingPosition, bitboards.allPieces, moves, size, moveIndex);
 
-}
+	generateCastlingMoves(bitboards, moves, gameState, size, moveIndex);
 
+}
 
 
 

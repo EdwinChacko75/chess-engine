@@ -29,8 +29,11 @@ using GameState = uint32_t;
 // 20-25: Black king position (0-63)
 // 26-27: Check status (00 = normal, 01 = check, 10 = checkmate, 11 = draw)
 
+constexpr GameState whiteKingsideCastleMask = 1UL;
+constexpr GameState whiteQueensideCastleMask = 1UL << 1;
+constexpr GameState blackKingsideCastleMask = 1UL << 2;
+constexpr GameState blackQueensideCastleMask = 1UL << 3;
 constexpr GameState turnMask = (1UL << 4);
-constexpr GameState castlingRights = (15UL << 0);
 constexpr GameState depth = (31UL << 5);
 constexpr GameState enPassantFileMask = (15UL << 10);
 constexpr GameState whiteKing = (63UL << 14);

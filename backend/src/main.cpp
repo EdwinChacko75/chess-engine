@@ -6,6 +6,7 @@
 #include "../include/bitboard.h"
 #include "../include/move_generation.h"
 #include "../include/gamestate.h"
+#include <chrono>
 
 #include <iostream>// only in dev.
 
@@ -22,6 +23,7 @@ int main()
 
     CROW_ROUTE(app, "/").methods("POST"_method)
         ([&](const crow::request& req) -> crow::response {
+
         auto receivedData = crow::json::load(req.body);
         if (!receivedData) {
             return crow::response(400, "Bad Request: Unable to parse JSON");
@@ -60,13 +62,20 @@ int main()
 
         arrayToBitboardConverter(boardCPP, gameBoards, gameState);
         initGameState(gameState, jsGameState);
+        auto start = std::chrono::high_resolution_clock::now();
 
         Move* movesArray = generateMoves(gameBoards, gameState);
+
+        
         //printMoves(movesArray, 32);
         //pb();
         delete[] movesArray;
         //printBoards(gameBoards);
-        
+        auto stop = std::chrono::high_resolution_clock::now();
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        std::cout << "Time taken: "
+            << duration.count() << " milliseconds" << std::endl;
+
 
         std::vector<Bitboard> bestMove = { gameBoards.whitePawns, gameBoards.whiteKnights, gameBoards.whiteBishops, gameBoards.whiteRooks, 
             gameBoards.whiteQueens, gameBoards.whiteKing, gameBoards.blackPawns, gameBoards.blackKnights, 
