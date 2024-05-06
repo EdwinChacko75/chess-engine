@@ -7,7 +7,12 @@ using namespace std;
 void printMoves(Move* moves, int size) {
 	cout << size<<'\n';
 	for (int i = 0; i < size; i++) {
-		cout << i<<": " << (moves[i]) << '\n' << endl;
+		Move curMove = moves[i];
+		std::cout << "Move: "
+			<< "from " << (curMove & sourceMask)
+			<< ", to " << ((destinationMask & curMove) >> 6)
+			<< " " << curMove
+			<< '\n' << std::endl;  
 
 	}
 }
@@ -48,6 +53,18 @@ static void insertMove(Move*& moves, const Move move, int& size, int& moveIndex)
 	moves[moveIndex] = move;
 	moveIndex++;
 }
+void addMovesFromBitboard(Bitboard pieceMoves, const Bitboards bitboards, const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex) {
+	while (pieceMoves) {
+		int targetSquare = lsb(pieceMoves);
+		pieceMoves &= pieceMoves - 1;
+		Move move = source;
+		move |= targetSquare << 6;
+		move |= pieceTypeOnSq(bitboards, source) << 19;
+		move |= pieceTypeOnSq(bitboards, targetSquare) << 23;
+		  
+		insertMove(moves, move, size, moveIndex);
+	}
+}
 
 Move* generateMoves(const Bitboards& bitboards, const GameState gameState) {
 	int moveIndex = 0;
@@ -57,10 +74,126 @@ Move* generateMoves(const Bitboards& bitboards, const GameState gameState) {
 	generatePawnMoves(bitboards, moves, gameState, size, moveIndex);
 	generateKnightMoves(bitboards, moves, gameState, size, moveIndex);
 	generateKingMoves(bitboards, moves, gameState, size, moveIndex);
+	generateBishopMoves(bitboards, moves, gameState, size, moveIndex);
+	generateRookMoves(bitboards, moves, gameState, size, moveIndex);
+	generateQueenMoves(bitboards, moves, gameState, size, moveIndex);
 	printMoves(moves, moveIndex);
 	return moves;
 }
 
+void generateOrthagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const int source, const Bitboard allPieces) {
+	Bitboard boardEdges[4] = { FILES[0], RANKS[7], FILES[7], RANKS[0]};
+	int directions[4] = { 1, 8, -1, -8 };
+
+	for (int i = 0; i < 4; i++) {
+		int sq = source;
+		int direction = directions[i];
+		Bitboard edge = boardEdges[i];
+
+		if ( !((1ULL << sq) & edge) ) {
+			while (sq + direction < 64 && sq + direction >= 0) {
+				sq += direction;
+				possibleMoves |= 1ULL << sq;
+
+				if (allPieces & (1ULL << sq)) {
+					blockers |= 1ULL << sq;
+					break;
+				}
+				if ( (1ULL << sq) & edge) break;
+			}
+		}
+	}
+	
+}
+
+void generateDiagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const int source, const Bitboard allPieces) {
+	int ranksIndices[4] = { 7, 7, 0, 0 };
+	int filesIndices[4] = { 7, 0, 0, 7 };
+	int directions[4] = { 7, 9, -7, -9 };
+	
+	for (int i = 0; i < 4; i++) {
+		int sq = source;
+		int direction = directions[i];
+		int ranksIndex = ranksIndices[i];
+		int filesIndex = filesIndices[i];
+		
+		if (!((1ULL << sq) & RANKS[ranksIndex] || (1ULL << sq) & FILES[filesIndex])) {
+			while (sq + direction < 64 && sq + direction >=0) {
+				sq += direction;
+				possibleMoves |= 1ULL << sq;
+
+				if (allPieces & (1ULL << sq)) {
+					blockers |= 1ULL << sq;
+					break;
+				}
+				if (1ULL << sq & RANKS[ranksIndex] || 1ULL << sq & FILES[filesIndex]) break;
+			}
+		}
+	}
+}
+
+void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+	Bitboard queens = (gameState & turnMask) ? bitboards.whiteQueens : bitboards.blackQueens;
+	const Bitboard friendlyPieces = (gameState & turnMask) ? bitboards.whitePieces : bitboards.blackPieces;
+
+	while (queens) {
+		int queenPosition = lsb(queens);
+		Bitboard possibleMoves = 0ULL;
+		Bitboard blockers = 0ULL;
+		Bitboard queen = 1ULL << queenPosition;
+
+		generateDiagonalMoves(possibleMoves, blockers, queenPosition, bitboards.allPieces);
+		generateOrthagonalMoves(possibleMoves, blockers, queenPosition, bitboards.allPieces);
+
+		possibleMoves &= ~friendlyPieces;
+
+		printBoard(possibleMoves);
+
+		addMovesFromBitboard(possibleMoves, bitboards, queenPosition, bitboards.allPieces, moves, size, moveIndex);
+
+		queens &= queens - 1;
+	}
+}
+
+void generateRookMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+	Bitboard rooks = (gameState & turnMask) ? bitboards.whiteRooks : bitboards.blackRooks;
+	const Bitboard friendlyPieces = (gameState & turnMask) ? bitboards.whitePieces : bitboards.blackPieces;
+
+	while (rooks) {
+		int rookPosition = lsb(rooks);
+		Bitboard possibleMoves = 0ULL;
+		Bitboard blockers = 0ULL;
+		Bitboard rook = 1ULL << rookPosition;
+
+		generateOrthagonalMoves(possibleMoves, blockers, rookPosition, bitboards.allPieces);
+
+		possibleMoves &= ~friendlyPieces;
+		printBoard(possibleMoves);
+		addMovesFromBitboard(possibleMoves, bitboards, rookPosition, bitboards.allPieces, moves, size, moveIndex);
+
+		rooks &= rooks - 1;
+	}
+}
+
+void generateBishopMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+	Bitboard bishops = (gameState & turnMask) ? bitboards.whiteBishops : bitboards.blackBishops;
+	const Bitboard friendlyPieces = (gameState & turnMask) ? bitboards.whitePieces : bitboards.blackPieces;
+
+	while (bishops) {
+		int bishopPosition = lsb(bishops);
+		Bitboard possibleMoves = 0ULL;
+		Bitboard blockers = 0ULL;
+		Bitboard bishop = 1ULL << bishopPosition;
+		
+		generateDiagonalMoves(possibleMoves, blockers, bishopPosition, bitboards.allPieces);
+
+		possibleMoves &= ~friendlyPieces;
+
+		addMovesFromBitboard(possibleMoves, bitboards, bishopPosition, bitboards.allPieces, moves, size, moveIndex);
+		
+		bishops &= bishops - 1;
+	}
+}
 
 
 void generateKnightMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
@@ -71,23 +204,11 @@ void generateKnightMoves(const Bitboards& bitboards, Move*& moves, const GameSta
 	while(knights) {
 		int knightPosition = lsb(knights);
 		Bitboard possibleMoves = KNIGHT_MOVES[knightPosition] & ~friendlyPieces;
-		while (possibleMoves) {
-			int targetSquare = lsb(possibleMoves);
-			possibleMoves &= possibleMoves - 1;
-			Move move = knightPosition;
-			move |= targetSquare << 6;
-			move |= (1UL << 19);
-			move |= pieceTypeOnSq(bitboards, targetSquare) << 23;
+		addMovesFromBitboard(possibleMoves, bitboards, knightPosition, bitboards.allPieces, moves, size, moveIndex);
 
-			insertMove(moves, move, size, moveIndex);
-		}
 		knights &= knights - 1;
 	}
-	
 }
-
-
-
 
 
 void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
@@ -96,17 +217,10 @@ void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState
 
 	
 	int kingPosition = lsb(king);
+	if (kingPosition == -1) return;
 	Bitboard possibleMoves = KING_MOVES[kingPosition] & ~friendlyPieces;
-	while (possibleMoves) {
-		int targetSquare = lsb(possibleMoves);
-		possibleMoves &= possibleMoves - 1;
-		Move move = kingPosition;
-		move |= targetSquare << 6;
-		move |= (1UL << 19);
-		move |= pieceTypeOnSq(bitboards, targetSquare) << 23;
 
-		insertMove(moves, move, size, moveIndex);
-	}
+	addMovesFromBitboard(possibleMoves, bitboards, kingPosition, bitboards.allPieces, moves, size, moveIndex);
 
 }
 

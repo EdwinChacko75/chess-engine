@@ -29,6 +29,8 @@ constexpr Move capturedPieceMask = (15UL << 23);
 
 void insertMove(Move*& moves, const Move move, int& size, int& moveIndex);
 
+void addMovesFromBitboard(Bitboard pieceMoves, const Bitboards bitboards, const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex);
+
 Move* generateMoves(const Bitboards& bitboards, const GameState gamestate);
 
 void generatePawnMoves(const Bitboards& bitboards, Move*& moves, const GameState gamestate, int& size, int& moveIndex);
@@ -38,6 +40,15 @@ void generateKnightMoves(const Bitboards& bitboards, Move*& moves, const GameSta
 void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
 
 void generateKingMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
+
+
+void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
+
+void generateBishopMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
+void generateDiagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const int sq, const Bitboard allPieces);
+
+void generateRookMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex);
+void generateOrthagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const int sq, const Bitboard allPieces);
 
 
 void printMoves(Move* moves, int size);

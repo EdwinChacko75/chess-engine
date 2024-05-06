@@ -73,6 +73,8 @@ void printBoard(const Bitboard bitboard) {
 		}
 		std::cout << '\n';
 	}
+    std::cout << '\n';
+
 }
 
 
