@@ -65,7 +65,75 @@ void addMovesFromBitboard(Bitboard pieceMoves, const Bitboards bitboards, const 
 	}
 }
 
-Move* generateMoves(const Bitboards& bitboards, const GameState gameState) {
+void filterLegalMoves(Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+	// for all static functions in generate moves, we can calculate these parts 
+	// and pass them into the functions to avoid repeated calculation
+	int turn = (gameState & turnMask);
+	int kingPosition;
+	Bitboard friendlyPieces;
+	/*Bitbaord enemyPieces;
+	Bitboard enemyRooks;
+	Bitboard enemyBishops;
+	Bitboard enemyQueens;
+	Bitboard enemyKnights;
+	Bitboard enemyPawns;
+	Bitboard enemyKing;*/
+
+
+
+
+	if (turn) {
+		kingPosition = bitboards.whiteKingSquare;
+		friendlyPieces = bitboards.whitePieces;
+
+	}
+	else {
+		kingPosition = bitboards.blackKingSquare;
+		friendlyPieces = bitboards.blackPieces; 
+	}
+
+	cout<<kingPosition<<'\n';
+	Bitboard diagonalBlockers = 0ULL;
+	Bitboard orthagonalBlockers = 0ULL;
+	Bitboard diagonalAttacks = 0ULL;
+	Bitboard orthagonalAttacks = 0ULL;
+	Bitboard knightAttacks = KNIGHT_MOVES[kingPosition];
+
+	generateDiagonalMoves(diagonalAttacks, diagonalBlockers, kingPosition, bitboards.allPieces);
+	generateOrthagonalMoves(orthagonalAttacks, orthagonalBlockers, kingPosition, bitboards.allPieces);
+
+	//cout<<"diagonal blocks\n";
+	//printBoard(diagonalBlockers);
+	//cout<<"orthagonal attacks\n";
+	//printBoard(diagonalAttacks);
+	//cout<<"rook blockers\n";
+	//printBoard(orthagonalBlockers);
+	//cout<<"rook attacks\n";
+	//printBoard(orthagonalAttacks);
+	//cout<<"knight attacks\n";
+	//printBoard(knightAttacks);
+
+	for (int i = 0; i < moveIndex; i++) {
+		const Move& move = moves[i];
+		
+		int source = move & sourceMask;
+		int destination = (destinationMask & move) >> 6;
+		int castling = (move & castlingMask) >> 18;
+		int promotion = (move & promotionMask) >> 12;
+		int enPassant = (move & enPassantMask) >> 16;
+		int capture = (captureMask & move) >> 15;
+		int pieceType = (pieceTypeMask & move) >> 19;
+		int capturedPieceType = (capturedPieceMask & move) >> 23;
+		// 19-22: piece type (0-5, 0 = pawn, 1 = knight, 2 = bishop, 3 = rook, 4 = queen, 5 = king)
+		//makeMove(bitboards, gameState, move);
+
+		
+		
+
+	}
+}
+
+Move* generateMoves(Bitboards& bitboards, const GameState gameState) {
 	int moveIndex = 0;
 	int size = 32;
 	Move* moves = new Move[size];
@@ -76,7 +144,9 @@ Move* generateMoves(const Bitboards& bitboards, const GameState gameState) {
 	generateBishopMoves(bitboards, moves, gameState, size, moveIndex);
 	generateRookMoves(bitboards, moves, gameState, size, moveIndex);
 	generateQueenMoves(bitboards, moves, gameState, size, moveIndex);
-	
+
+	filterLegalMoves(bitboards, moves, gameState, size, moveIndex);
+
 	printMoves(moves, moveIndex);
 	return moves;
 }
@@ -189,6 +259,7 @@ void generateQueenMoves(const Bitboards& bitboards, Move*& moves, const GameStat
 		queens &= queens - 1;
 	}
 }
+
 
 void generateRookMoves(const Bitboards& bitboards, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
 	Bitboard rooks = (gameState & turnMask) ? bitboards.whiteRooks : bitboards.blackRooks;

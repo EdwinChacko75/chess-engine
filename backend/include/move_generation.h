@@ -32,7 +32,9 @@ void insertMove(Move*& moves, const Move move, int& size, int& moveIndex);
 
 void addMovesFromBitboard(Bitboard pieceMoves, const Bitboards bitboards, const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex);
 
-Move* generateMoves(const Bitboards& bitboards, const GameState gamestate);
+void filterLegalMoves(Bitboards& bitboards, Move*& moves, const GameState gamestate, int& size, int& moveIndex);
+
+Move* generateMoves(Bitboards& bitboards, const GameState gamestate);
 
 void generatePawnMoves(const Bitboards& bitboards, Move*& moves, const GameState gamestate, int& size, int& moveIndex);
 

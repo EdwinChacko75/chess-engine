@@ -18,16 +18,13 @@ typedef struct {
 } JSgameState;
 
 // Using the uint16_t to represent the GameState
-using GameState = uint32_t;
+using GameState = uint16_t;
 
 // The game state is a 16-bit integer with the following format:
 // 0-3: Castling rights (0 = white kingside, bit 1 = white queenside, bit 2 = black kingside, bit 3 = black queenside)
 // 4: turn (1 = white, 0 = black)
 // 5-9: analysis depth 
 // 10-13:enPassant file (0-8, 8 = none, 0 = H, 1 = G, ... 7 = A)
-// 14-19: White king position (0-63)
-// 20-25: Black king position (0-63)
-// 26-27: Check status (00 = normal, 01 = check, 10 = checkmate, 11 = draw)
 
 constexpr GameState whiteKingsideCastleMask = 1UL;
 constexpr GameState whiteQueensideCastleMask = 1UL << 1;
@@ -36,9 +33,7 @@ constexpr GameState blackQueensideCastleMask = 1UL << 3;
 constexpr GameState turnMask = (1UL << 4);
 constexpr GameState depth = (31UL << 5);
 constexpr GameState enPassantFileMask = (15UL << 10);
-constexpr GameState whiteKing = (63UL << 14);
-constexpr GameState blackKing = (63UL << 20);
-constexpr GameState checkStatus = (3UL << 26);
+
 
 
 enum CastlingRights {

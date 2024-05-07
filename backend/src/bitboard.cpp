@@ -34,6 +34,7 @@ void arrayToBitboardConverter(const std::vector<int>& chessboard, Bitboards& bit
         }
     }
     bitboards.updateAggregateBitboards();
+    bitboards.updateKingSquares();
 }
 
 void printBoards(const Bitboards& bitboards) {

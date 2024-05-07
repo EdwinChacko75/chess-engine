@@ -61,25 +61,6 @@ constexpr Bitboard EighthRank = 0xFF00000000000000ULL;
 
 
 
-struct Bitboards {
-    Bitboard whitePawns, whiteKnights, whiteBishops, whiteRooks, whiteQueens, whiteKing;
-    Bitboard blackPawns, blackKnights, blackBishops, blackRooks, blackQueens, blackKing;
-    Bitboard whitePieces, blackPieces, allPieces;
-
-    Bitboards() : whitePawns(0), whiteKnights(0), whiteBishops(0),
-        whiteRooks(0), whiteQueens(0), whiteKing(0),
-        blackPawns(0), blackKnights(0), blackBishops(0),
-        blackRooks(0), blackQueens(0), blackKing(0),
-        whitePieces(0), blackPieces(0), allPieces(0) {
-        updateAggregateBitboards();
-    }
-    
-    void updateAggregateBitboards() {
-        whitePieces = whitePawns | whiteKnights | whiteBishops | whiteRooks | whiteQueens | whiteKing;
-        blackPieces = blackPawns | blackKnights | blackBishops | blackRooks | blackQueens | blackKing;
-        allPieces = whitePieces | blackPieces;
-    }
-};
 #ifdef _MSC_VER
 // Microsoft Visual C++ compiler
 #include <intrin.h>
@@ -129,6 +110,33 @@ inline int countBits(Bitboard bitboard) {
     return count;
 }
 #endif
+
+struct Bitboards {
+    Bitboard whitePawns, whiteKnights, whiteBishops, whiteRooks, whiteQueens, whiteKing;
+    Bitboard blackPawns, blackKnights, blackBishops, blackRooks, blackQueens, blackKing;
+    Bitboard whitePieces, blackPieces, allPieces;
+    int whiteKingSquare, blackKingSquare;
+
+    Bitboards() : whitePawns(0), whiteKnights(0), whiteBishops(0),
+        whiteRooks(0), whiteQueens(0), whiteKing(0),
+        blackPawns(0), blackKnights(0), blackBishops(0),
+        blackRooks(0), blackQueens(0), blackKing(0),
+        whitePieces(0), blackPieces(0), allPieces(0),
+        whiteKingSquare(0), blackKingSquare(0) {
+        updateAggregateBitboards();
+        updateKingSquares();
+    }
+
+    void updateAggregateBitboards() {
+        whitePieces = whitePawns | whiteKnights | whiteBishops | whiteRooks | whiteQueens | whiteKing;
+        blackPieces = blackPawns | blackKnights | blackBishops | blackRooks | blackQueens | blackKing;
+        allPieces = whitePieces | blackPieces;
+    }
+    void updateKingSquares() {
+        whiteKingSquare = lsb(whiteKing);
+        blackKingSquare = msb(blackKing);
+    }
+};
 
 inline Bitboard setBit(Bitboard bitboard, int sq) {
     return bitboard | (1ULL << sq);
