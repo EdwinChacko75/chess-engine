@@ -24,7 +24,7 @@ using GameState = uint16_t;
 // 0-3: Castling rights (0 = white kingside, bit 1 = white queenside, bit 2 = black kingside, bit 3 = black queenside)
 // 4: turn (1 = white, 0 = black)
 // 5-9: analysis depth 
-// 10-13:enPassant file (0-8, 8 = none, 0 = H, 1 = G, ... 7 = A)
+// 10-15: enPassant square ( 0 = none, 0 = H, 1 = G, ... 7 = A)
 
 constexpr GameState whiteKingsideCastleMask = 1UL;
 constexpr GameState whiteQueensideCastleMask = 1UL << 1;
@@ -32,7 +32,7 @@ constexpr GameState blackKingsideCastleMask = 1UL << 2;
 constexpr GameState blackQueensideCastleMask = 1UL << 3;
 constexpr GameState turnMask = (1UL << 4);
 constexpr GameState depth = (31UL << 5);
-constexpr GameState enPassantFileMask = (15UL << 10);
+constexpr GameState enPassantFileMask = (63UL << 10);
 
 
 

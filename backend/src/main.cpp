@@ -12,8 +12,6 @@
 
 // #include your chess logic header files here
 
-
-
 int main()
 {
     unsigned int numThreads = std::thread::hardware_concurrency();
@@ -43,7 +41,7 @@ int main()
 
         jsGameState.turn = receivedData["turn"].i();
         jsGameState.depth = receivedData["depth"].i();
-        jsGameState.enPassant = receivedData["enPassant"].i();
+        jsGameState.enPassant = receivedData["enPassantSquare"].i();
         
         jsGameState.whiteKingsideCastling = receivedData["whiteKingsideCastling"].i();
         jsGameState.whiteQueensideCastling = receivedData["whiteQueensideCastling"].i();
@@ -57,14 +55,18 @@ int main()
         int sq = 0;
 
         // Chess AI logic
-        Bitboards gameBoards;
+        PlayerBitboard white;
+        PlayerBitboard black;
+
+
         GameState gameState = 0;
 
-        arrayToBitboardConverter(boardCPP, gameBoards, gameState);
+        arrayToBitboardConverter(boardCPP, white, black, gameState);
+
         initGameState(gameState, jsGameState);
         auto start = std::chrono::high_resolution_clock::now();
 
-        Move* movesArray = generateMoves(gameBoards, gameState);
+        Move* movesArray = generateMoves(white, black, gameState);
 
         
         //printMoves(movesArray, 32);
@@ -77,9 +79,9 @@ int main()
             << duration.count() << " milliseconds" << std::endl;
 
 
-        std::vector<Bitboard> bestMove = { gameBoards.whitePawns, gameBoards.whiteKnights, gameBoards.whiteBishops, gameBoards.whiteRooks, 
-            gameBoards.whiteQueens, gameBoards.whiteKing, gameBoards.blackPawns, gameBoards.blackKnights, 
-            gameBoards.blackBishops, gameBoards.blackRooks, gameBoards.blackQueens, gameBoards.blackKing
+        std::vector<Bitboard> bestMove = { white.pawns, white.bishops, white.knights, white.rooks,
+            white.queens, white.king, black.pawns, black.bishops, black.knights, black.rooks, 
+            black.queens, black.king
         };
         //std::cout << "is set: " << countBits(gameBoards.whitePawns) << std::endl;
 
@@ -92,6 +94,14 @@ int main()
 
         crow::response res(responseData);
         res.set_header("Content-Type", "application/json");
+        
+       /* for (int i = 0; i < 64; i++) {
+            std::cout << "pawn on " << i << '\n';
+            printBoard(FORWARD_PAWN_PUSHES[i]);
+
+        }*/
+
+
         return res;
             });
 

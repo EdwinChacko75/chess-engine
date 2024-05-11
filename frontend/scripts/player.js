@@ -194,7 +194,7 @@ export class AI extends Player {
         let msg = {
             "board": this.JSboardToCPPboard(game.board.board),
             "turn": game.board.turn,
-            "enPassant": game.board.enPassant,
+            "enPassantSquare": game.board.enPassant,
             "depth": this.difficulty,
             "counter": this.counter,
             "pruned": this.pruned,
