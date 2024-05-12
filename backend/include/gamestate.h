@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 
 //#include "./bitboard.h"
+//#include "./move_generation.h"
 #include <cstdint>
 
 typedef struct {
@@ -12,9 +13,6 @@ typedef struct {
     int whiteQueensideCastling;
     int blackKingsideCastling;
     int blackQueensideCastling;
-    int whiteKingPosition;
-    int blackKingPosition;
-    int checkStatus;
 } JSgameState;
 
 // Using the uint16_t to represent the GameState
@@ -31,7 +29,7 @@ constexpr GameState whiteQueensideCastleMask = 1UL << 1;
 constexpr GameState blackKingsideCastleMask = 1UL << 2;
 constexpr GameState blackQueensideCastleMask = 1UL << 3;
 constexpr GameState turnMask = (1UL << 4);
-constexpr GameState depth = (31UL << 5);
+constexpr GameState depthMask = (31UL << 5);
 constexpr GameState enPassantFileMask = (63UL << 10);
 
 
@@ -73,10 +71,7 @@ inline bool isDraw(GameState gameState) {
 }
 
 
-// Gamestate evaluation functions
-inline int turn(const GameState& gameState) {
-    return (gameState & turnMask) >> 4;
-}
+
 
 
 void initGameState(GameState& gameState, JSgameState jsState); 

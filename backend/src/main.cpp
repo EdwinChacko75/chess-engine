@@ -2,10 +2,16 @@
 #include "crow/middlewares/cors.h"
 #include <vector>
 #include <string>
+#include <limits>
 #include <thread>
 #include "../include/bitboard.h"
 #include "../include/move_generation.h"
 #include "../include/gamestate.h"
+#include "../include/evaluate.h"
+#include "../include/move_pick.h"
+
+
+
 #include <chrono>
 
 #include <iostream>// only in dev.
@@ -61,23 +67,35 @@ int main()
 
         GameState gameState = 0;
 
-        arrayToBitboardConverter(boardCPP, white, black, gameState);
+        arrayToBitboardConverter(boardCPP, white, black);
 
         initGameState(gameState, jsGameState);
         auto start = std::chrono::high_resolution_clock::now();
 
-        Move* movesArray = generateMoves(white, black, gameState);
+        int nodesVisitied = 0;
 
-        
+        int computedMove = negamax(white, black, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
+
+        std::cout << "Best Move: " << (computedMove & sourceMask) << " to " << (computedMove & destinationMask) <<"; " << computedMove << std::endl;
+        //printChessBoard(white, black);
+        ////makeMove(white, black, 3148467);
+        ////makeMove(black, white, 3148467);
+
+        //printChessBoard(white, black);
+        //unMakeMove(white, black, 3148467);
+        ////unMakeMove(black, white, 3148467);
+
+        //printChessBoard(white, black);
+
+
         //printMoves(movesArray, 32);
         //pb();
-        delete[] movesArray;
         //printBoards(gameBoards);
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
         std::cout << "Time taken: "
             << duration.count() << " milliseconds" << std::endl;
-
+        std::cout << "Nodes visited: " << nodesVisitied << std::endl;
 
         std::vector<Bitboard> bestMove = { white.pawns, white.bishops, white.knights, white.rooks,
             white.queens, white.king, black.pawns, black.bishops, black.knights, black.rooks, 

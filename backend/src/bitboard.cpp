@@ -1,6 +1,6 @@
 #include "../include/bitboard.h"
 
-void arrayToBitboardConverter(const std::vector<int>& chessboard, PlayerBitboard& white, PlayerBitboard& black, GameState& gameState) {
+void arrayToBitboardConverter(const std::vector<int>& chessboard, PlayerBitboard& white, PlayerBitboard& black) {
 
 
     for (size_t i = 0; i < 64; i++) {
@@ -35,31 +35,58 @@ void arrayToBitboardConverter(const std::vector<int>& chessboard, PlayerBitboard
 
 void printBoards(const PlayerBitboard& white, const PlayerBitboard& black) {
 
-
-    std:: cout << "White Pawns" << std::endl;
-    printBoard(white.pawns);
-    std:: cout << "White Knights" << std::endl;
-    printBoard(white.knights);
-    std:: cout << "White Bishops" << std::endl;
-    printBoard(white.bishops);
-    std:: cout << "White Rooks" << std::endl;
-    printBoard(white.rooks);
-    std:: cout << "White Queens" << std::endl;
-    printBoard(white.queens);
-    std:: cout << "White King" << std::endl;
-    printBoard(white.king);
-    std:: cout << "Black Pawns" << std::endl;
-    printBoard(black.pawns);
-    std:: cout << "Black Knights" << std::endl;
-    printBoard(black.knights);
-    std:: cout << "Black Bishops" << std::endl;
-    printBoard(black.bishops);
-    std:: cout << "Black Rooks" << std::endl;
-    printBoard(black.rooks);
-    std:: cout << "Black Queens" << std::endl;
-    printBoard(black.queens);
-    std:: cout << "Black King" << std::endl;
-    printBoard(black.king);
+    if (white.friendlyPieces & black.friendlyPieces) {
+		std::cout << "Error: Overlapping pieces" << std::endl;
+	}
+    if(white.pawns) {
+        std::cout << "White Pawns" << std::endl;
+        printBoard(white.pawns);
+    }
+    if (white.knights) {
+		std::cout << "White Knights" << std::endl;
+		printBoard(white.knights);
+	}
+    if (white.bishops) {
+        std::cout << "White Bishops" << std::endl;
+        printBoard(white.bishops);
+    }
+    if (white.rooks) {
+		std::cout << "White Rooks" << std::endl;
+		printBoard(white.rooks);
+	}
+    if (white.queens) {
+		std::cout << "White Queens" << std::endl;
+		printBoard(white.queens);
+	}
+    if (white.king) {
+        std::cout << "White King" << std::endl;
+        printBoard(white.king);
+    }
+    if (black.pawns) {
+		std::cout << "Black Pawns" << std::endl;
+		printBoard(black.pawns);
+	}
+    if (black.knights) {
+        std::cout << "Black Knights" << std::endl;
+        printBoard(black.knights);
+    }
+    if (black.bishops) {
+        std::cout << "Black Bishops" << std::endl;
+        printBoard(black.bishops);
+    }
+    if (black.rooks) {
+        std::cout << "Black Rooks" << std::endl;
+        printBoard(black.rooks);
+    }
+    if (black.queens) {
+		std::cout << "Black Queens" << std::endl;
+		printBoard(black.queens);
+	}
+    if (black.king) {
+		std::cout << "Black King" << std::endl;
+		printBoard(black.king);
+	}
+  
 }
 void printChessBoard(const PlayerBitboard& white, const PlayerBitboard& black) {
 	Bitboard allPieces = white.allPieces | black.allPieces;

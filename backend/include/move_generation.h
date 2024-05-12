@@ -2,6 +2,7 @@
 #define MOVE_GENERATION_H
 
 #include "./bitboard.h"
+#include "./gamestate.h"
 
 using Move = uint32_t;
 
@@ -110,7 +111,7 @@ bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents
 void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent,
 	Move*& moves, const GameState gamestate, int& size, int& moveIndex);
 
-Move* generateMoves(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState gamestate);
+Move* generateMoves(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState gamestate, int& moveIndex);
 
 
 void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents,
@@ -143,5 +144,9 @@ void generateOrthagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const 
 
 void printMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Move* moves, int size);
 
+
+
+
+void updateGameState(GameState& gameState, const Move move);
 
 #endif

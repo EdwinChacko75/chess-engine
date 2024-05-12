@@ -6,7 +6,7 @@ set(SOURCES
 	src/bitboard.cpp
 	src/move_generation.cpp
 	src/gamestate.cpp
- )
+	src/evaluate.cpp "src/move_pick.cpp")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 include(CheckIPOSupported)

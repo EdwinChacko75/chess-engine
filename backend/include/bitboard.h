@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <iostream> // Only for developments
 #include <bitset>
-#include "./gamestate.h"
+//#include "./gamestate.h"
 //Define constants for squares
 
 using Bitboard = uint64_t;
@@ -112,7 +112,7 @@ inline bool isSet(const Bitboard bitboard, int sq) {
 }
 
 
-void arrayToBitboardConverter(const std::vector<int> &chessboard, PlayerBitboard& white, PlayerBitboard& black, GameState& gameState);
+void arrayToBitboardConverter(const std::vector<int> &chessboard, PlayerBitboard& white, PlayerBitboard& black);
 
 inline int pieceTypeOnSq(const PlayerBitboard& allies, const PlayerBitboard& opponents, int sq) {
     Bitboard square = 1ULL << sq;

@@ -13,9 +13,9 @@ void printMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Move* moves, 
 			<< ", to " << ((destinationMask & curMove) >> 6)
 			<< " " << curMove
 			<< '\n' << std::endl;  
-		makeMove(allies, opponents, curMove);
-		printChessBoard(allies, opponents);
-		unMakeMove(allies, opponents, curMove);
+		//makeMove(allies, opponents, curMove);
+		//printChessBoard(allies, opponents);
+		//unMakeMove(allies, opponents, curMove);
 	}
 }
 static void insertMove(Move*& moves, const Move move, int& size, int& moveIndex) {
@@ -321,8 +321,7 @@ void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent
 	
 }
 
-Move* generateMoves(PlayerBitboard& white, PlayerBitboard& black, const GameState gameState) {
-	int moveIndex = 0;
+Move* generateMoves(PlayerBitboard& white, PlayerBitboard& black, const GameState gameState, int& moveIndex) {
 	int size = 32;
 
 	PlayerBitboard& allies = (gameState & turnMask) ? white : black;
@@ -339,7 +338,7 @@ Move* generateMoves(PlayerBitboard& white, PlayerBitboard& black, const GameStat
 
 	filterLegalMoves(allies, opponents, moves, gameState, size, moveIndex);
 
-	printMoves(allies, opponents, moves, moveIndex);
+	//printMoves(allies, opponents, moves, moveIndex);
 	return moves;
 }
 
@@ -594,4 +593,79 @@ static void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard
 	}
 
 
+}
+
+
+void updateGameState(GameState& gameState, const Move move) {
+	int depth = (gameState & depthMask) >> 5;
+	int moveCastlingFlag = move & castlingMask;
+	int source = move & sourceMask;
+	int destination = move & destinationMask;
+	int piece = move & pieceTypeMask;
+	int capture = move & capturedPieceMask;
+
+	if (depth == 0) {
+		throw std::runtime_error("Depth is 0 in update game state");
+	}
+
+	gameState &= ~enPassantFileMask;
+	gameState ^= turnMask;
+	gameState &= ~depthMask;
+	gameState |= ((depth - 1) & 0x1F) << 5;
+	
+	// En passant
+	if (move & doublePawnPushMask) {
+		gameState |= ((source + destination) / 2) << 10;
+	}
+	
+	// Castling rights if the king moves (even if it's a castling move)
+	if (piece == 6) {
+		switch (source) {
+			case 4:
+				gameState &= ~WhiteKingside;
+				gameState &= ~WhiteQueenside;
+				break;
+			case 60:
+				gameState &= ~BlackKingside;
+				gameState &= ~BlackQueenside;
+				break;
+		}
+	}
+
+	// Castling rights if a rook moves 
+	if (piece == 4) {
+		switch (source) {
+			case 0:
+				gameState &= ~WhiteKingside;
+				break;
+			case 7:
+				gameState &= ~WhiteQueenside;
+				break;
+			case 56:
+				gameState &= ~BlackKingside;
+				break;
+			case 63:
+				gameState &= ~BlackQueenside;
+				break;
+		}
+	}
+
+	// Castling rights if a rook is captured
+	if (capture == 4) {
+		switch (destination) {
+			case 0:
+				gameState &= ~WhiteKingside;
+				break;
+			case 7:
+				gameState &= ~WhiteQueenside;
+				break;
+			case 56:
+				gameState &= ~BlackKingside;
+				break;
+			case 63:
+				gameState &= ~BlackQueenside;
+				break;
+		}
+	}
+		
 }
