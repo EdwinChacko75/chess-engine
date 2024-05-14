@@ -46,7 +46,7 @@ Move movePick(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState
 int negamax(PlayerBitboard& allies, PlayerBitboard& opponents,const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter) {
 	counter++;
 	//std::cout<< "ply: " << ply << std::endl;
-	//printChessBoard(allies, opponents);
+	printChessBoard(allies, opponents);
 
 	int depth = (gameState & depthMask) >> 5;
 	int whoIsMoving = ourMove ? 1 : -1;

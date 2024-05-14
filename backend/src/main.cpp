@@ -131,9 +131,11 @@ int main()
         return res;
             });
 
-    std::string port = std::getenv("PORT") ? std::getenv("PORT") : "8080";
 
-    app.concurrency(2);//numThreads == 0 ? 2 : numThreads/2);
-    app.port(std::stoi(port)).run();
+    app.concurrency(1);//numThreads == 0 ? 2 : numThreads/2);
+    const char* port = std::getenv("PORT");
+    uint16_t port_number = port ? std::stoi(port) : 8080;
+
+    app.port(port).bindaddr("0.0.0.0").run();
     return 0;
 }
