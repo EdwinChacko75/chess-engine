@@ -3,6 +3,6 @@
 
 #include "./bitboard.h"
 
-int evaluate(const PlayerBitboard& white, const PlayerBitboard& black, int& whoIsMoving);
+int evaluate(const PlayerBitboard& white, const PlayerBitboard& black);
 
 #endif // !EVALUATE_H

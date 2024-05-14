@@ -87,6 +87,7 @@ struct PlayerBitboard {
     Bitboard allPieces = 0;
 
     int kingPosition;
+    bool isWhite;
     
     void updatePlayerBitboard(PlayerBitboard& opp) {
 		friendlyPieces = pawns | bishops | knights | rooks | queens | king;

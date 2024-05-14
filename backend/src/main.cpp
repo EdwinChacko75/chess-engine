@@ -63,6 +63,8 @@ int main()
         // Chess AI logic
         PlayerBitboard white;
         PlayerBitboard black;
+        white.isWhite = true;
+        black.isWhite = false;
 
 
         GameState gameState = 0;
@@ -73,17 +75,23 @@ int main()
         auto start = std::chrono::high_resolution_clock::now();
 
         int nodesVisitied = 0;
-
-        int computedMove = negamax(white, black, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
+        int computedMove;
+        if ((gameState & turnMask) >> 4 ) {
+			computedMove = negamax(white, black, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
+        }
+        else {
+			computedMove = negamax(black, white, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
+		}
 
         std::cout << "Best Move: " << (computedMove & sourceMask) << " to " << (computedMove & destinationMask) <<"; " << computedMove << std::endl;
+        std::cout<< "highest rated move: " << computedMove << std::endl;
         //printChessBoard(white, black);
-        ////makeMove(white, black, 3148467);
-        ////makeMove(black, white, 3148467);
+        ////makeTestMove(white, black, 3148467);
+        ////makeTestMove(black, white, 3148467);
 
         //printChessBoard(white, black);
-        //unMakeMove(white, black, 3148467);
-        ////unMakeMove(black, white, 3148467);
+        //unMakeTestMove(white, black, 3148467);
+        ////unMakeTestMove(black, white, 3148467);
 
         //printChessBoard(white, black);
 

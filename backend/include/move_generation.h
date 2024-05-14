@@ -104,9 +104,9 @@ void insertMove(Move*& moves, const Move move, int& size, int& moveIndex);
 void addMovesFromBitboard(Bitboard pieceMoves, const PlayerBitboard& allies, const PlayerBitboard& opponents,
 	const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex);
 
-void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
+void makeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 
-void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
+void unMakeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents, const GameState gameState, const Move move);
 void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent,
 	Move*& moves, const GameState gamestate, int& size, int& moveIndex);
