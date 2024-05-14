@@ -99,8 +99,6 @@ constexpr Bitboard KING_MOVES[64] = {
 };
 
 
-void insertMove(Move*& moves, const Move move, int& size, int& moveIndex);
-
 void addMovesFromBitboard(Bitboard pieceMoves, const PlayerBitboard& allies, const PlayerBitboard& opponents,
 	const int source, const Bitboard allPieces, Move*& moves, int& size, int& moveIndex);
 
@@ -114,8 +112,7 @@ void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent
 Move* generateMoves(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState gamestate, int& moveIndex);
 
 
-void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents,
-	Move*& moves, const GameState gamestate, int& size, int& moveIndex);
+void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents, Move*& moves, const GameState gameState, int& size, int& moveIndex);
 
 
 void generateKnightMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents,

@@ -552,7 +552,7 @@ void generateKingMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Move*&
 
 
 
-static void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
+void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
 	int turn = gameState & turnMask;
 	const Bitboard* pawnPushesArray = turn ? FORWARD_PAWN_PUSHES : BACKWARD_PAWN_PUSHES;
 	const Bitboard* pawnCapturesArray = turn ? FORWARD_PAWN_CAPTURES : BACKWARD_PAWN_CAPTURES;

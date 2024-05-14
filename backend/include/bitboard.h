@@ -71,7 +71,7 @@ inline int countBits(Bitboard bitboard) {
     while (bitboard) {
         count += bitboard & 1;
         bitboard >>= 1;
-    //}
+    }
     return count;
 }
 #endif
