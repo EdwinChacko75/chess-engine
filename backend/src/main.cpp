@@ -134,8 +134,8 @@ int main()
 
     app.concurrency(1);//numThreads == 0 ? 2 : numThreads/2);
     const char* port = std::getenv("PORT");
-    uint16_t port_number = port ? std::stoi(port) : 8080;
+    uint16_t port_number = port ? static_cast<uint16_t>(std::stoi(port)) : 8080;
 
-    app.port(port).bindaddr("0.0.0.0").run();
+    app.port(port_number).bindaddr("0.0.0.0").run();
     return 0;
 }
