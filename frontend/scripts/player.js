@@ -182,61 +182,50 @@ export class AI extends Player {
         return cppBoard;
     }
     // TT not storing all explored positions 
-    decideMove(game) {
-        // console.log(game.board.enPassant);
-        // if (game.board.enPassant == null) {
-        //     game.board.enPassant = -1; // out of range so no eP
-        // }
+    async decideMove(game) {
+        let cppResponse;
         let whiteKing = game.board.castling.whiteKingside ? 1 : 0;
         let whiteQueen = game.board.castling.whiteQueenside ? 1 : 0;
         let blackKing = game.board.castling.blackKingside ? 1 : 0;
         let blackQueen = game.board.castling.blackQueenside ? 1 : 0;
+      
         let msg = {
-            "board": this.JSboardToCPPboard(game.board.board),
-            "turn": game.board.turn,
-            "enPassantSquare": game.board.enPassant,
-            "depth": this.difficulty,
-            "counter": this.counter,
-            "pruned": this.pruned,
-            "zorbisted": this.zorbisted,
-            "whiteKingsideCastling": whiteKing,
-            "whiteQueensideCastling": whiteQueen,
-            "blackKingsideCastling": blackKing,
-            "blackQueensideCastling": blackQueen,
+          "board": this.JSboardToCPPboard(game.board.board),
+          "turn": 0,
+          "enPassantSquare": game.board.enPassant,
+          "depth": this.difficulty,
+          "counter": this.counter,
+          "pruned": this.pruned,
+          "zorbisted": this.zorbisted,
+          "whiteKingsideCastling": whiteKing,
+          "whiteQueensideCastling": whiteQueen,
+          "blackKingsideCastling": blackKing,
+          "blackQueensideCastling": blackQueen,
         };
-        console.log(msg);
-        fetch("http://localhost:8080/", {
+            
+        try {
+          const response = await fetch("http://localhost:8080/", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
+              "Content-Type": "application/json",
             },
             body: JSON.stringify(msg),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => console.log(data))
-        .catch(error => console.log('Fetch error:', error));
+          });
       
-        let clonedPieces = Game.allPieces(game).map(Game.clonePiece).filter(piece => piece !== null);
-        let newBoard = new ChessBoard(clonedPieces, this.color);
-
-        // Iterative deepening logic
-        // let best = { score: -Infinity, move: null };
-        // for (let i = 1; i <= this.difficulty; i++) {
-        //     this.counter = 0;
-        //     this.pruned = 0;
-        //     this.zorbisted = 0;
-        //     best = this.minimax(game, newBoard, -Infinity, Infinity, true, i, best.move);
-        // }
-        let best = this.minimax(game, newBoard, -Infinity, Infinity, true, this.difficulty);
-
-        this.bestMove = null;
-        return best.move;
-    }
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+      
+          const data = await response.json();
+          cppResponse = new Move(data.pieceType, data.bestMoveStart, data.bestMoveEnd, data.exception);
+        } catch (error) {
+          console.log('Fetch error:', error);
+        }
+      
+        console.log(cppResponse);
+        console.log(game.board.board)
+        return cppResponse;
+      }
     minimax(game, board, alpha, beta, maximizingPlayer, depth, previousBestMove = null) {
         this.counter++;
         let playerColor = maximizingPlayer ? game.turn.color : game.turn.color === 'white' ? 'black' : 'white';

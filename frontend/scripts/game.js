@@ -33,7 +33,7 @@ export class Game {
     }
     async gameLoop() {
         while (!this.isOver) {             
-            let move = this.turn instanceof AI ? this.turn.decideMove(this) : await this.waitForPlayerMove(this);
+            let move = this.turn instanceof AI ? await this.turn.decideMove(this) : await this.waitForPlayerMove(this);
             await this.makeMove(move);
             await this.houseKeeping();
             if (!(this.turn instanceof AI)) {

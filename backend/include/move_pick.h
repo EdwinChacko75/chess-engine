@@ -7,9 +7,9 @@
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 
-Move movePick(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply);
+Move movePick(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned);
 
-int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter);
+int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned);
 
 int quiesce(int alpha, int beta, int color, int ply);
 

@@ -1,7 +1,7 @@
 import {Game} from "./game.js";
 import {Player, AI} from "./player.js";
 
-let difficulty = 2;
+let difficulty = 7;
 function startGame() {
     document.getElementById('startNewGame').removeEventListener('click', startGame);
     let white = new Player('player1', 'white');

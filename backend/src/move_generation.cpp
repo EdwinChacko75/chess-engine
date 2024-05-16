@@ -44,17 +44,13 @@ static void insertMove(Move*& moves, const Move move, int& size, int& moveIndex)
 }
 
 static void addPromotionMoves(const PlayerBitboard& allies, const PlayerBitboard& opponents, Move*& moves, Bitboard promotionMoves, const int source, int& size, int& moveIndex) {
-	Move promoteToQueen = source | 4UL << 12 | 1UL << 19;
-	Move promoteToRook = source | 3UL << 12 | 1UL << 19;
-	Move promoteToBishop = source | 2UL << 12 | 1UL << 19;
-	Move promoteToKnight = source | 1UL << 12 | 1UL << 19;
-
 	while (promotionMoves) {
 		int promotionSquare = lsb(promotionMoves);
-		promoteToQueen |= promotionSquare << 6;
-		promoteToRook |= promotionSquare << 6;
-		promoteToBishop |= promotionSquare << 6;
-		promoteToKnight |= promotionSquare << 6;
+
+		Move promoteToQueen = source | 4UL << 12 | 1UL << 19 | (promotionSquare << 6);
+		Move promoteToRook = source | 3UL << 12 | 1UL << 19 | (promotionSquare << 6);
+		Move promoteToBishop = source | 2UL << 12 | 1UL << 19 | (promotionSquare << 6);
+		Move promoteToKnight = source | 1UL << 12 | 1UL << 19 | (promotionSquare << 6);
 
 		if ( !(source - promotionSquare == 8 || source - promotionSquare == -8) ) {
 			promoteToQueen |= captureMask;
@@ -102,7 +98,6 @@ void makeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) 
 
 	switch (pieceType) {
 		case 1: // pawn
-			
 			allies.pawns = clearBit(allies.pawns, source);
 			allies.pawns = setBit(allies.pawns, destination);
 			break;
@@ -157,7 +152,29 @@ void makeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) 
 				break;
 		}
 	}
+	if (move & promotionMask) {
+		int promotionPieceType = (move & promotionMask) >> 12;
+		allies.pawns = clearBit(allies.pawns, destination);
+		allies.pawns = clearBit(allies.pawns, source);
+
+		switch (promotionPieceType) {
+			case 1: // knight
+				allies.knights = setBit(allies.knights, destination);
+				break;
+			case 2: // bishop
+				allies.bishops = setBit(allies.bishops, destination);
+				break;
+			case 3: // rook
+				allies.rooks = setBit(allies.rooks, destination);
+				break;
+			case 4: // queen
+				allies.queens = setBit(allies.queens, destination);
+				break;
+			default:
+				break;
+		}
 	
+	}
 	if (move & castlingMask) {
 		if (destination == 1) {
 			allies.rooks = clearBit(allies.rooks, 0);
@@ -251,7 +268,28 @@ void unMakeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move
 				break;
 		}
 	}
-	int castliemaskie = move & castlingMask;
+	if (move & promotionMask) {
+		int promotionPieceType = (move & promotionMask) >> 12;
+		
+		switch (promotionPieceType) {
+			case 1: // knight
+				allies.knights = clearBit(allies.knights, destination);
+				break;
+			case 2: // bishop
+				allies.bishops = clearBit(allies.bishops, destination);
+				break;
+			case 3: // rook
+				allies.rooks = clearBit(allies.rooks, destination);
+				break;
+			case 4: // queen
+				allies.queens = clearBit(allies.queens, destination);
+				break;
+			default:
+				break;
+		}
+	
+	}
+
 	if (move & castlingMask) {
 		if (destination == 1) {
 			allies.rooks = clearBit(allies.rooks, 2);
@@ -279,10 +317,11 @@ void unMakeTestMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move
 			opponents.pawns = setBit(opponents.pawns, destination - 8);
 		}
 	}
+	allies.updatePlayerBitboard(opponents);
 	
 }
 
-bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents, const GameState gameState, const Move move) {
+bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents, const GameState gameState) {
 
 	Bitboard diagonalBlockers = 0ULL;
 	Bitboard orthagonalBlockers = 0ULL;
@@ -313,7 +352,7 @@ void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent
 		
 		makeTestMove(allies, opponents, moves[i]);
 
-		if (!isKingInCheck(allies, opponents, gameState, moves[i])) legalMoves[kept++] = moves[i];
+		if (!isKingInCheck(allies, opponents, gameState) && ((moves[i] & capturedPieceMask) >> 23) != 6) legalMoves[kept++] = moves[i];
 		
 		unMakeTestMove(allies, opponents, moves[i]);
 	}
@@ -396,14 +435,14 @@ void generateDiagonalMoves(Bitboard& possibleMoves, Bitboard& blockers, const in
 }
 
 void generateCastlingMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
-	if (isKingInCheck(allies, opponents, gameState, 0)) return;
+	if (isKingInCheck(allies, opponents, gameState)) return;
 	int turn = gameState & turnMask;
 	if (gameState & whiteKingsideCastleMask && turn && !(0x6 & allies.allPieces) ) {	// white kingside castle
 		Move castlingCondition = 3;
 		castlingCondition |= 2 << 6;
 		castlingCondition |= (6 << 19);
 		makeTestMove(allies, opponents, castlingCondition);
-		if (!isKingInCheck(allies, opponents, gameState, castlingCondition)) {
+		if (!isKingInCheck(allies, opponents, gameState)) {
 			Move castlingMove = 3;
 			castlingMove |= 1 << 6;
 			castlingMove |= (6 << 19) | castlingMask;
@@ -417,7 +456,7 @@ void generateCastlingMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Mo
 		castlingCondition |= 4 << 6;
 		castlingCondition |= (6 << 19);
 		makeTestMove(allies, opponents, castlingCondition);
-		if (!isKingInCheck(allies, opponents, gameState, castlingCondition)) {
+		if (!isKingInCheck(allies, opponents, gameState)) {
 			Move castlingMove = 3;
 			castlingMove |= 5 << 6;
 			castlingMove |= (6 << 19) | castlingMask;
@@ -431,7 +470,7 @@ void generateCastlingMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Mo
 		castlingCondition |= 58 << 6;
 		castlingCondition |= (6 << 19);
 		makeTestMove(allies, opponents, castlingCondition);
-		if (!isKingInCheck(allies, opponents, gameState, castlingCondition)) {
+		if (!isKingInCheck(allies, opponents, gameState)) {
 			Move castlingMove = 59;
 			castlingMove |= 57 << 6;
 			castlingMove |= (6 << 19) | castlingMask;
@@ -445,7 +484,7 @@ void generateCastlingMoves(PlayerBitboard& allies, PlayerBitboard& opponents, Mo
 		castlingCondition |= 60 << 6;
 		castlingCondition |= (6 << 19);
 		makeTestMove(allies, opponents, castlingCondition);
-		if (!isKingInCheck(allies, opponents, gameState, castlingCondition)) {
+		if (!isKingInCheck(allies, opponents, gameState)) {
 			Move castlingMove = 59;
 			castlingMove |= 61 << 6;
 			castlingMove |= (6 << 19) | castlingMask;
@@ -566,10 +605,24 @@ void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& oppon
 	while (pawns) {
 		int pawnPosition = lsb(pawns);
 		Bitboard currentSquareMask = 1ULL << pawnPosition;
-		Bitboard possibleMoves = pawnPushesArray[pawnPosition] & ~allies.friendlyPieces;
+		Bitboard possibleMoves = pawnPushesArray[pawnPosition] & ~allies.allPieces;
+	
+		// if the pawn can double push, but cannot single push, remove the double push
+		if (pawnPosition < 16 && allies.isWhite) {
+			if (possibleMoves & RANKS[3] && !(possibleMoves & RANKS[2])) {
+				possibleMoves &= ~(1ULL << (pawnPosition + 16));
+			}
+		}
+		else if (pawnPosition > 47 && !allies.isWhite) {
+			if (possibleMoves & RANKS[4] && !(possibleMoves & RANKS[5])) {
+				possibleMoves &= ~(1ULL << (pawnPosition - 16));
+			}
+		}
+			
 		possibleMoves |= pawnCapturesArray[pawnPosition] & opponents.friendlyPieces;
 
-		if (pawnCapturesArray[pawnPosition] & enPassantTargetMask) {
+
+		if (pawnCapturesArray[pawnPosition] & enPassantTargetMask && enPassantSquare) {
 			Move move = pawnPosition | (enPassantSquare << 6);
 			move |= captureMask;
 			move |= enPassantMask;
@@ -580,6 +633,8 @@ void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& oppon
 
 		if (possibleMoves & promotionRank) {
 			Bitboard promotionMoves = promotionRank & possibleMoves;
+			
+	
 			possibleMoves &= ~promotionRank;
 
 			addPromotionMoves(allies, opponents, moves, promotionMoves, pawnPosition, size, moveIndex);

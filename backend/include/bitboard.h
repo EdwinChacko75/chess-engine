@@ -93,7 +93,7 @@ struct PlayerBitboard {
 		friendlyPieces = pawns | bishops | knights | rooks | queens | king;
         kingPosition = msb(king);
         opp.friendlyPieces = opp.pawns | opp.bishops | opp.knights | opp.rooks | opp.queens | opp.king;
-        opp.kingPosition = msb(opp.king);
+        opp.kingPosition = lsb(opp.king);
         allPieces = friendlyPieces | opp.friendlyPieces;
         opp.allPieces = allPieces;
 	}

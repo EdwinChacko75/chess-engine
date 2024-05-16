@@ -2,7 +2,6 @@
 #include "crow/middlewares/cors.h"
 #include <vector>
 #include <string>
-#include <limits>
 #include <thread>
 #include "../include/bitboard.h"
 #include "../include/move_generation.h"
@@ -70,53 +69,84 @@ int main()
         GameState gameState = 0;
 
         arrayToBitboardConverter(boardCPP, white, black);
-
         initGameState(gameState, jsGameState);
         auto start = std::chrono::high_resolution_clock::now();
+        //printChessBoard(white, black);
 
         int nodesVisitied = 0;
+        int prunedBranches = 0;
+        int zorbistedNodes = 0;
         int computedMove;
-        if ((gameState & turnMask) >> 4 ) {
-			computedMove = negamax(white, black, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
+        
+        Move bestMove;
+        if ((gameState & turnMask) >> 4) {
+            bestMove = movePick(white, black, gameState, true, INT_MIN, INT_MAX, 0, nodesVisitied, prunedBranches);
         }
         else {
-			computedMove = negamax(black, white, gameState, true, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 0, nodesVisitied);
-		}
+            bestMove = movePick(black, white, gameState, true, INT_MIN, INT_MAX, 0, nodesVisitied, prunedBranches);
+        }
 
-        std::cout << "Best Move: " << (computedMove & sourceMask) << " to " << (computedMove & destinationMask) <<"; " << computedMove << std::endl;
-        std::cout<< "highest rated move: " << computedMove << std::endl;
-        //printChessBoard(white, black);
-        ////makeTestMove(white, black, 3148467);
-        ////makeTestMove(black, white, 3148467);
+        std::cout << "Best Move: " << (bestMove & sourceMask) << " to " << ((bestMove & destinationMask)>>6) << "; " << bestMove << std::endl;
 
-        //printChessBoard(white, black);
-        //unMakeTestMove(white, black, 3148467);
-        ////unMakeTestMove(black, white, 3148467);
-
-        //printChessBoard(white, black);
-
-
-        //printMoves(movesArray, 32);
-        //pb();
-        //printBoards(gameBoards);
+        
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
         std::cout << "Time taken: "
             << duration.count() << " milliseconds" << std::endl;
         std::cout << "Nodes visited: " << nodesVisitied << std::endl;
+        std::cout << "Pruned branches: " << prunedBranches << std::endl;
 
-        std::vector<Bitboard> bestMove = { white.pawns, white.bishops, white.knights, white.rooks,
-            white.queens, white.king, black.pawns, black.bishops, black.knights, black.rooks, 
-            black.queens, black.king
-        };
+       
         //std::cout << "is set: " << countBits(gameBoards.whitePawns) << std::endl;
 
         // Prepare the response
         crow::json::wvalue responseData;
-        responseData["bestMove"] = bestMove;
-        responseData["counter"] = counter;
-        responseData["pruned"] = pruned;
-        responseData["zorbisted"] = zorbisted;
+        int startSq = bestMove & sourceMask;
+        int endSq = (bestMove & destinationMask) >> 6;
+        int startCol = (startSq ) % 8;
+        int startRow = (63 - startSq) / 8;
+        int endCol = (endSq ) % 8;
+        int endRow =(63- endSq) / 8 ;
+        
+        std::vector<int> bestMoveStart = {startRow, 7-startCol };
+        std::vector<int> bestMoveEnd = { endRow, 7-endCol  };
+        std::string bestPieceType;
+        int pieceType = (bestMove & pieceTypeMask) >> 19;
+        switch (pieceType) {
+            case 1: 
+                bestPieceType = "Pawn";
+                break;
+            case 2:
+                bestPieceType = "Knight";
+                break;
+
+            case 3:
+                bestPieceType = "Bishop";
+                break;
+            case 4:
+                bestPieceType = "Rook";
+                break;
+            case 5:
+                bestPieceType = "Queen";
+                break;
+            case 6:
+                bestPieceType = "King";
+                break;
+            default:
+                bestPieceType = "Empty";
+                break;
+        }
+        
+        bool moveException = false;// move& castlingMask || move & enPassantMask ||
+        responseData["bestMoveStart"] = bestMoveStart;
+        responseData["bestMoveEnd"] = bestMoveEnd;
+        responseData["exception"] = moveException;
+        responseData["pieceType"] = bestPieceType;
+        
+        responseData["counter"] = nodesVisitied;
+        responseData["pruned"] = prunedBranches;
+        responseData["zorbisted"] = zorbistedNodes;
+		responseData["time"] = duration.count();
 
         crow::response res(responseData);
         res.set_header("Content-Type", "application/json");
@@ -126,7 +156,6 @@ int main()
             printBoard(FORWARD_PAWN_PUSHES[i]);
 
         }*/
-
 
         return res;
             });
