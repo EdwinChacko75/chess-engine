@@ -80,12 +80,11 @@ int main()
         
         Move bestMove;
         if ((gameState & turnMask) >> 4) {
-            bestMove = movePick(white, black, gameState, true, INT_MIN, INT_MAX, 0, nodesVisitied, prunedBranches);
+            bestMove = searchBestMove(white, black, gameState, nodesVisitied, prunedBranches);
         }
         else {
-            bestMove = movePick(black, white, gameState, true, INT_MIN, INT_MAX, 0, nodesVisitied, prunedBranches);
+            bestMove = searchBestMove(black, white, gameState, nodesVisitied, prunedBranches);
         }
-
         std::cout << "Best Move: " << (bestMove & sourceMask) << " to " << ((bestMove & destinationMask)>>6) << "; " << bestMove << std::endl;
 
         

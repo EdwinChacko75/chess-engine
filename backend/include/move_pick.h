@@ -3,12 +3,13 @@
 
 #include "./move_generation.h"
 #include "./evaluate.h"
+using PositionHistory = std::vector<std::string>;
+
 
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 
-Move movePick(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned);
-
+Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, int& counter, int& pruned);
 int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned);
 
 int quiesce(int alpha, int beta, int color, int ply);

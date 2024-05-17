@@ -1,8 +1,72 @@
 #include "../include/move_pick.h"
 #include <iostream>
+#include<string>
+#include <algorithm> 
+
 
 using std::cout;
 using std::endl;
+
+
+void printHistory(const PositionHistory& positionHistory) {
+	for (int i = 0; i < positionHistory.size(); i++) {
+		cout << "\nPosition " << (i + 1) << endl;
+		cout << positionHistory[i] << endl;
+	}
+}
+
+static std::string positionAsString(const PlayerBitboard& allies, const PlayerBitboard& opponents) {
+	std::string position = "";
+	Bitboard allPieces = allies.allPieces | opponents.allPieces;
+	for (int row = 0; row < 8; row++) {
+		for (int col = 0; col < 8; col++) {
+			int sq = row * 8 + col;
+			if (isSet(allies.pawns, sq)) {
+				position += "P";
+			}
+			else if (isSet(allies.knights, sq)) {
+				position += "N";
+			}
+			else if (isSet(allies.bishops, sq)) {
+				position += "B";
+			}
+			else if (isSet(allies.rooks, sq)) {
+				position += "R";
+			}
+			else if (isSet(allies.queens, sq)) {
+				position += "Q";
+			}
+			else if (isSet(allies.king, sq)) {
+				position += "K";
+			}
+			else if (isSet(opponents.pawns, sq)) {
+				position += "p";
+			}
+			else if (isSet(opponents.knights, sq)) {
+				position += "n";
+			}
+			else if (isSet(opponents.bishops, sq)) {
+				position += "b";
+			}
+			else if (isSet(opponents.rooks, sq)) {
+				position += "r";
+			}
+			else if (isSet(opponents.queens, sq)) {
+				position += "q";
+			}
+			else if (isSet(opponents.king, sq)) {
+				position += "k";
+			}
+			else {
+				position += ".";
+			}
+		}
+		position += "\n";
+	}
+	reverse(position.begin(), position.end());
+
+	return position;
+}
 
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) {
 	int source = move & sourceMask;
@@ -39,106 +103,105 @@ void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) {
 
 }
 
-// move evaluating is weird
-Move movePick(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned) {
+Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, int& counter, int& pruned) {
 	Move bestMove;
-	int maxEval = INT_MIN;
+	int bestScore = INT_MIN;
+
 	int moveIndex = 0;
-	
-
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
-	printMoves(allies, opponents, moves, moveIndex);
-	for (int i = 0; i < moveIndex; i++) {
-		GameState copyGameState = gameState;
+	// TODO: Implement move ordering
 
+	for (int i = 0; i < moveIndex; i++) {
 		makeMove(allies, opponents, moves[i]);
 
+		GameState copyGameState = gameState;
 		updateGameState(copyGameState, moves[i]);
 
-		int eval = negamax(opponents, allies, copyGameState, !ourMove, -beta, -alpha, ply + 1, ++counter, pruned);
-		cout<< "eval: " << eval << endl;
-		printChessBoard(allies, opponents);
+		//PositionHistory positionHistory;
+		//positionHistory.push_back(positionAsString(allies, opponents));
 
-		if (eval > maxEval) {
-			maxEval = eval;
+		int eval = -negamax(opponents, allies, copyGameState, true, INT_MIN, INT_MAX, 1, counter, pruned);
+
+		unMakeMove(allies, opponents, moves[i]);
+
+		if (eval > bestScore) {
+			bestScore = eval;
 			bestMove = moves[i];
 		}
-		unMakeMove(allies, opponents, moves[i]);
 	}
+
 	delete[] moves;
 
 	return bestMove;
-
 }
-int negamax(PlayerBitboard& allies, PlayerBitboard& opponents,const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned) {
-	//printChessBoard(allies, opponents);
+int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned) {
 	int depth = (gameState & depthMask) >> 5;
-	int whoIsMoving = ourMove ? 1 : -1;
-	if (depth == 0) return whoIsMoving * evaluate(allies, opponents);
-
-	bool turn = (gameState & turnMask) >> 4;
 	int moveIndex = 0;
-	const Bitboard& afterAllies = allies.allPieces;
-	const Bitboard& afterOpponents = opponents.allPieces;
-	
-	
+	if (depth == 0) {
+		//int evaluation = evaluate(allies, opponents);
+		// cout << "leaf eval: " << evaluation << endl;
+		// printChessBoard(allies, opponents);
+		return evaluate(allies, opponents);
+	}
+
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
-	//printMoves(allies, opponents, moves, moveIndex);
 
-	if (moveIndex == 0 && isKingInCheck(allies, opponents, gameState) ) return INT_MAX;
-	if (moveIndex == 0) return 0;
+	if (moveIndex == 0 && isKingInCheck(allies, opponents, gameState)) {
+		delete[] moves;
+
+		return INT_MIN;
+	}
+	if (moveIndex == 0) {
+		delete[] moves;
+		return 0;
+	}
+
 	
-	int maxEval = INT_MIN;
 
+	int maxEval = INT_MIN;
 	for (int i = 0; i < moveIndex; i++) {
 		GameState copyGameState = gameState;
-
-		const Bitboard beforeAllies = allies.allPieces;
-		const Bitboard beforeOpponents = opponents.allPieces;
-
 		makeMove(allies, opponents, moves[i]);
-
 		updateGameState(copyGameState, moves[i]);
-		
-		//printChessBoard(allies, opponents);
-		const Bitboard duringAllies = allies.allPieces;
+
 		int eval = -negamax(opponents, allies, copyGameState, !ourMove, -beta, -alpha, ply + 1, ++counter, pruned);
-		
-		if (eval > maxEval) maxEval = eval;
-		
 		unMakeMove(allies, opponents, moves[i]);
 
-		if (beforeAllies != afterAllies || beforeOpponents != afterOpponents) {
-			cout << "before" << endl;printBoard(beforeAllies);cout << "after" << endl;printBoard(afterAllies);
-			printBoard(duringAllies);
-			printChessBoard(allies, opponents);
-			printBoards(allies, opponents);
-			makeMove(allies, opponents, moves[i]);
-			allies.updatePlayerBitboard(opponents);
-			cout<<"made move"<<endl;
+		maxEval = std::max(maxEval, eval);
+		alpha = std::max(alpha, maxEval);
 
-			printChessBoard(allies, opponents);
-			unMakeMove(allies, opponents, moves[i]);
-			allies.updatePlayerBitboard(opponents);
-			cout<<"unmade move"<<endl;
-			printChessBoard(allies, opponents);
-
-			exit(1);
-		}
-
-		alpha = std::max(alpha, eval);
-
-		if (beta <= alpha) {
+		if (alpha >= beta) {
 			pruned++;
 			break;
 		}
-		
 	}
+
 	delete[] moves;
 	return maxEval;
-	
 }
 
 int quiesce(int alpha, int beta, int color, int ply) {
 	return 0;
 }
+
+
+
+
+/*
+if (beforeAllies != afterAllies || beforeOpponents != afterOpponents) {
+	cout << "before" << endl; printBoard(beforeAllies); cout << "after" << endl; printBoard(afterAllies);
+	printChessBoard(allies, opponents);
+	printBoards(allies, opponents);
+	makeMove(allies, opponents, moves[i]);
+	allies.updatePlayerBitboard(opponents);
+	cout << "made move" << endl;
+
+	printChessBoard(allies, opponents);
+	unMakeMove(allies, opponents, moves[i]);
+	allies.updatePlayerBitboard(opponents);
+	cout << "unmade move" << endl;
+	printChessBoard(allies, opponents);
+
+	exit(1);
+}
+*/
