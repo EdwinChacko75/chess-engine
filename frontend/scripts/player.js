@@ -188,7 +188,6 @@ export class AI extends Player {
         let whiteQueen = game.board.castling.whiteQueenside ? 1 : 0;
         let blackKing = game.board.castling.blackKingside ? 1 : 0;
         let blackQueen = game.board.castling.blackQueenside ? 1 : 0;
-      
         let msg = {
           "board": this.JSboardToCPPboard(game.board.board),
           "turn": 0,

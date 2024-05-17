@@ -334,7 +334,7 @@ bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents
 	Bitboard pawnAttacks = gameState & turnMask ? FORWARD_PAWN_CAPTURES[allies.kingPosition] : BACKWARD_PAWN_CAPTURES[allies.kingPosition];
 	
 	return opponents.knights & knightAttacks || opponents.pawns & pawnAttacks ||
-		opponents.king & kingAttacks || opponents.queens & (diagonalAttacks | orthagonalAttacks) || opponents.rooks & orthagonalAttacks ||
+		allies.king & kingAttacks || opponents.queens & (diagonalAttacks | orthagonalAttacks) || opponents.rooks & orthagonalAttacks ||
 		opponents.bishops & diagonalAttacks;
 
 }

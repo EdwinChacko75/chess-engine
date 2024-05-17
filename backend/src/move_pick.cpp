@@ -109,7 +109,7 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 
 	int moveIndex = 0;
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
-	// TODO: Implement move ordering
+
 
 	for (int i = 0; i < moveIndex; i++) {
 		makeMove(allies, opponents, moves[i]);
@@ -121,7 +121,8 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 		//positionHistory.push_back(positionAsString(allies, opponents));
 
 		int eval = -negamax(opponents, allies, copyGameState, true, INT_MIN, INT_MAX, 1, counter, pruned);
-
+		cout << " Eval: " << eval << endl;
+		printChessBoard(allies, opponents);
 		unMakeMove(allies, opponents, moves[i]);
 
 		if (eval > bestScore) {
@@ -129,7 +130,10 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 			bestMove = moves[i];
 		}
 	}
-
+	cout<< "best score: " << bestScore << endl;
+	makeMove(allies, opponents, bestMove);
+	printChessBoard(allies, opponents);
+	unMakeMove(allies, opponents, bestMove);
 	delete[] moves;
 
 	return bestMove;
