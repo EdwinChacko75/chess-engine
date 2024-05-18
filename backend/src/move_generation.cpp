@@ -599,7 +599,7 @@ void generatePawnMoves(const PlayerBitboard& allies, const PlayerBitboard& oppon
 
 	Bitboard pawns = allies.pawns;
 
-	int enPassantSquare = (gameState & enPassantFileMask) >> 10;
+	int enPassantSquare = (gameState & enPassantSquareMask) >> 10;
 	Bitboard enPassantTargetMask = 1ULL << enPassantSquare;
 
 	while (pawns) {
@@ -663,7 +663,7 @@ void updateGameState(GameState& gameState, const Move move) {
 		throw std::runtime_error("Depth is 0 in update game state");
 	}
 
-	gameState &= ~enPassantFileMask;
+	gameState &= ~enPassantSquareMask;
 	gameState ^= turnMask;
 	gameState &= ~depthMask;
 	gameState |= ((depth - 1) & 0x1F) << 5;

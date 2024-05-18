@@ -5,7 +5,7 @@
 
 
 // Piece-Square Value Tables
-constexpr int pawnSquareTableWhite[64] = {
+constexpr int PAWN_SQUARE_TABLE_WHITE[64] = {
      0,  0,  0,  0,  0,  0,  0,  0,      // 1st rank (H1 - A1)
      5, 10, 10,-20,-20, 10, 10,  5,
      5, -5,-10, -5, -5,-10, -5,  5,
@@ -15,7 +15,7 @@ constexpr int pawnSquareTableWhite[64] = {
     50, 50, 50, 50, 50, 50, 50, 50,
      0,  0,  0,  0,  0,  0,  0,  0       // 8th rank (H8 - A8)
 };
-constexpr int pawnSquareTableBlack[64] = {
+constexpr int PAWN_SQUARE_TABLE_BLACK[64] = {
      0,  0,  0,  0,  0,  0,  0,  0,      
     50, 50, 50, 50, 50, 50, 50, 50,  
     10, 10, 20, 30, 30, 20, 10, 10,  
@@ -26,7 +26,7 @@ constexpr int pawnSquareTableBlack[64] = {
      0,  0,  0,  0,  0,  0,  0,  0,      
 };
 
-constexpr int knightSquareTableWhite[64] = {
+constexpr int KNIGHT_SQUARE_TABLE_WHITE[64] = {
     -50, -40, -30, -30, -30, -30, -40, -50,
     -40, -20,   0,   5,   5,   0, -20, -40,
     -30,   5,  10,  15,  15,  10,   5, -30,
@@ -37,7 +37,7 @@ constexpr int knightSquareTableWhite[64] = {
     -50, -40, -30, -30, -30, -30, -40, -50 
 };
 
-constexpr int knightSquareTableBlack[64] = {
+constexpr int KNIGHT_SQUARE_TABLE_BLACK[64] = {
     -50, -40, -30, -30, -30, -30, -40, -50,
     -40, -20,   0,   0,   0,   0, -20, -40,
     -30,   0,  10,  15,  15,  10,   0, -30,
@@ -47,7 +47,7 @@ constexpr int knightSquareTableBlack[64] = {
     -40, -20,   0,   5,   5,   0, -20, -40,
     -50, -40, -30, -30, -30, -30, -40, -50
 };
-constexpr int bishopSquareTableWhite[64] = {
+constexpr int BISHOP_SQUARE_TABLE_WHITE[64] = {
     -20, -10, -10, -10, -10, -10, -10, -20,  
     -10,   5,   0,   0,   0,   0,   5, -10,  
     -10,  10,  10,  10,  10,  10,  10, -10,  
@@ -58,7 +58,7 @@ constexpr int bishopSquareTableWhite[64] = {
     -20, -10, -10, -10, -10, -10, -10, -20   
 };
 
-constexpr int bishopSquareTableBlack[64] = {
+constexpr int BISHOP_SQUARE_TABLE_BLACK[64] = {
 	-20, -10, -10, -10, -10, -10, -10, -20,  
 	-10,   0,   0,   0,   0,   0,   0, -10,  
 	-10,   0,   5,  10,  10,   5,   0, -10,  
@@ -69,7 +69,7 @@ constexpr int bishopSquareTableBlack[64] = {
 	-20, -10, -10, -10, -10, -10, -10, -20   
 };
 
-constexpr int rookSquareTableWhite[64] = {
+constexpr int ROOK_SQUARE_TABLE_WHITE[64] = {
 	 0,  0,  0,  5,  5,  0,  0,  0,  
 	-5,  0,  0,  0,  0,  0,  0, -5,  
 	-5,  0,  0,  0,  0,  0,  0, -5,  
@@ -80,7 +80,7 @@ constexpr int rookSquareTableWhite[64] = {
 	 0,  0,  0,  0,  0,  0,  0,  0   
 };
 
-constexpr int rookSquareTableBlack[64] = {
+constexpr int ROOK_SQUARE_TABLE_BLACK[64] = {
      0,  0,  0,  0,  0,  0,  0,  0,      // can add 5's in the centre of this
      5, 10, 10, 10, 10, 10, 10,  5,
     -5,  0,  0,  0,  0,  0,  0, -5,
@@ -91,7 +91,7 @@ constexpr int rookSquareTableBlack[64] = {
      0,  0,  0,  5,  5,  0,  0,  0
 };
 
-constexpr int queenSquareTableWhite[64] = {
+constexpr int QUEEN_SQUARE_TABLE_WHITE[64] = {
 	-20, -10, -10,  -5,  -5, -10, -10, -20,
 	-10,   0,   5,   0,   0,   0,   0, -10,
 	-10,   5,   5,   5,   5,   5,   0, -10,
@@ -103,7 +103,7 @@ constexpr int queenSquareTableWhite[64] = {
 	
 };
 
-constexpr int queenSquareTableBlack[64] = {
+constexpr int QUEEN_SQUARE_TABLE_BLACK[64] = {
 	-20, -10, -10,  -5,  -5, -10, -10, -20,
 	-10,   0,   0,   0,   0,   0,   0, -10,
 	-10,   0,   5,   5,   5,   5,   0, -10,
@@ -114,7 +114,7 @@ constexpr int queenSquareTableBlack[64] = {
 	-20, -10, -10,  -5,  -5, -10, -10, -20
 };
 
-constexpr int kingSquareTableOpeningWhite[64] = {
+constexpr int KING_SQUARE_TABLE_WHITE_OP[64] = {
 	 20,  30,  10,   0,   0,  10,  30,  20,  
 	 20,  20,   0,   0,   0,   0,  20,  20,  
 	-10, -20, -20, -20, -20, -20, -20, -10,  
@@ -124,7 +124,7 @@ constexpr int kingSquareTableOpeningWhite[64] = {
 	-30, -40, -40, -50, -50, -40, -40, -30,  
 	-30, -40, -40, -50, -50, -40, -40, -30   
 };
-constexpr int kingSquareTableOpeningBlack[64] = {
+constexpr int KING_SQUARE_TABLE_BLACK_OP[64] = {
 	-30, -40, -40, -50, -50, -40, -40, -30,  
 	-30, -40, -40, -50, -50, -40, -40, -30,  
 	-30, -40, -40, -50, -50, -40, -40, -30,  
@@ -146,7 +146,7 @@ constexpr int kingSquareTableEndgameWhite[64] = {
 	-50, -30, -30, -30, -30, -30, -30, -50   
 };
 
-constexpr int kingSquareTableEndgameBlack[64] = {
+constexpr int KING_SQUARE_TABLE_ENDGAME[64] = {
 	-50, -30, -30, -30, -30, -30, -30, -50,  
 	-30, -30,   0,   0,   0,   0, -30, -30,  
 	-30, -10,  20,  30,  30,  20, -10, -30,  

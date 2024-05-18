@@ -10,7 +10,7 @@
 #     src/move_pick.cpp
 # )
 
-# set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD 20)
 # set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # include(CheckIPOSupported)
@@ -42,11 +42,12 @@
 # target_link_libraries(UltimateChess PRIVATE Boost::system Boost::filesystem Boost::thread Boost::regex Boost::program_options pthread)
 
 
+
 cmake_minimum_required(VERSION 3.10)
 project(UltimateChess)
 
 # Set the C++ standard
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Sources
@@ -56,7 +57,7 @@ set(SOURCES
     src/move_generation.cpp
     src/gamestate.cpp
     src/evaluate.cpp 
-    src/move_pick.cpp)
+    src/move_pick.cpp "src/transposition_table.cpp")
 
 # Interprocedural Optimization (LTO)
 include(CheckIPOSupported)

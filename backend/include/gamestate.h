@@ -30,7 +30,7 @@ constexpr GameState blackKingsideCastleMask = 1UL << 2;
 constexpr GameState blackQueensideCastleMask = 1UL << 3;
 constexpr GameState turnMask = (1UL << 4);
 constexpr GameState depthMask = (31UL << 5);
-constexpr GameState enPassantFileMask = (63UL << 10);
+constexpr GameState enPassantSquareMask = (63UL << 10);
 
 
 

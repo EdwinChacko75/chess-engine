@@ -1,7 +1,7 @@
 #include "../include/move_pick.h"
 #include <iostream>
-#include<string>
-#include <algorithm> 
+#include <string>
+#include <algorithm>
 
 
 using std::cout;
@@ -104,12 +104,22 @@ void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) {
 }
 
 Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, int& counter, int& pruned) {
+	startNewSearch();
+	ZobristHash zobristHash = generateZorbistHash(allies, opponents, gameState);
+	int depth = (gameState & depthMask) >> 5;
+	TTEntry* entry;
+	if (probeEntry(zobristHash, entry, depth)) {
+		if (entry->bound == BOUND_EXACT) {
+			return entry->bestMove;
+		}
+	}
 	Move bestMove;
 	int bestScore = INT_MIN;
 
 	int moveIndex = 0;
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
 
+	cout << "zorbist hash: " << zobristHash << endl;
 
 	for (int i = 0; i < moveIndex; i++) {
 		makeMove(allies, opponents, moves[i]);
@@ -121,8 +131,9 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 		//positionHistory.push_back(positionAsString(allies, opponents));
 
 		int eval = -negamax(opponents, allies, copyGameState, true, INT_MIN, INT_MAX, 1, counter, pruned);
-		cout << " Eval: " << eval << endl;
-		printChessBoard(allies, opponents);
+		//cout << " Eval: " << eval << endl;
+		//printChessBoard(allies, opponents);
+		//cout<< "zorbist hash: " << generateZorbistHash(allies, opponents, copyGameState) << endl;
 		unMakeMove(allies, opponents, moves[i]);
 
 		if (eval > bestScore) {
@@ -130,23 +141,52 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 			bestMove = moves[i];
 		}
 	}
-	cout<< "best score: " << bestScore << endl;
+	/*cout<< "best score: " << bestScore << endl;
 	makeMove(allies, opponents, bestMove);
 	printChessBoard(allies, opponents);
-	unMakeMove(allies, opponents, bestMove);
-	delete[] moves;
+	unMakeMove(allies, opponents, bestMove);*/
+	
+	storeEntry(zobristHash, depth, bestScore,  BOUND_EXACT, bestMove);
 
+	delete[] moves;
 	return bestMove;
 }
+
+
 int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, bool ourMove, int alpha, int beta, int ply, int& counter, int& pruned) {
+	ZobristHash zobristHash = generateZorbistHash(allies, opponents, gameState);
+	int alphaOriginal = alpha;
 	int depth = (gameState & depthMask) >> 5;
+
+	// Check if the position is already in the table
+	
+	
+	TTEntry* entry;
+	if (  probeEntry(zobristHash, entry, (depth - 1) )  ) {
+		if (entry->bound == BOUND_EXACT) {
+			return entry->score;
+		}
+		else if (entry->bound == BOUND_LOWERBOUND) {
+			alpha = std::max(alpha, entry->score);
+		}
+		else if (entry->bound == BOUND_UPPERBOUND) {
+			beta = std::min(beta, entry->score);
+		}
+		if (alpha >= beta) {
+			return entry->score;
+		}
+		
+	}
+	
 	int moveIndex = 0;
+
 	if (depth == 0) {
 		//int evaluation = evaluate(allies, opponents);
 		// cout << "leaf eval: " << evaluation << endl;
 		// printChessBoard(allies, opponents);
 		return evaluate(allies, opponents);
 	}
+	Move bestMove_TT;
 
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
 
@@ -160,8 +200,6 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 		return 0;
 	}
 
-	
-
 	int maxEval = INT_MIN;
 	for (int i = 0; i < moveIndex; i++) {
 		GameState copyGameState = gameState;
@@ -171,7 +209,10 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 		int eval = -negamax(opponents, allies, copyGameState, !ourMove, -beta, -alpha, ply + 1, ++counter, pruned);
 		unMakeMove(allies, opponents, moves[i]);
 
-		maxEval = std::max(maxEval, eval);
+		if (eval > maxEval) {
+			maxEval = eval;
+			bestMove_TT = moves[i];
+		}
 		alpha = std::max(alpha, maxEval);
 
 		if (alpha >= beta) {
@@ -179,6 +220,8 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 			break;
 		}
 	}
+
+	storeEntry(zobristHash, depth, maxEval, (alpha >= beta ? BOUND_LOWERBOUND : (alphaOriginal != alpha ? BOUND_EXACT : BOUND_UPPERBOUND)), bestMove_TT);
 
 	delete[] moves;
 	return maxEval;

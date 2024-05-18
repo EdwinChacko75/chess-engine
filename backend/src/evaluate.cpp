@@ -22,49 +22,49 @@ int evaluate(const PlayerBitboard& allies, const PlayerBitboard& opponents) {
 	int positionalValue = 0;
 	for (int i = 0; i < 64; i++) {
 		if (white->pawns & (1ULL << i)) {
-			positionalValue += pawnSquareTableWhite[i];
+			positionalValue += PAWN_SQUARE_TABLE_WHITE[i];
 		}
 		else if (black->pawns & (1ULL << i)) {
-			positionalValue -= pawnSquareTableBlack[i];
+			positionalValue -= PAWN_SQUARE_TABLE_BLACK[i];
 		}
 		else if (white->knights & (1ULL << i)) {
-			positionalValue += knightSquareTableWhite[i];
+			positionalValue += KNIGHT_SQUARE_TABLE_WHITE[i];
 		}
 		else if (black->knights & (1ULL << i)) {
-			positionalValue -= knightSquareTableBlack[i];
+			positionalValue -= KNIGHT_SQUARE_TABLE_BLACK[i];
 		}
 		else if (white->bishops & (1ULL << i)) {
-			positionalValue += bishopSquareTableWhite[i];
+			positionalValue += BISHOP_SQUARE_TABLE_WHITE[i];
 		}
 		else if (black->bishops & (1ULL << i)) {
-			positionalValue -= bishopSquareTableBlack[i];
+			positionalValue -= BISHOP_SQUARE_TABLE_BLACK[i];
 		}
 		else if (white->rooks & (1ULL << i)) {
-			positionalValue += rookSquareTableWhite[i];
+			positionalValue += ROOK_SQUARE_TABLE_WHITE[i];
 		}
 		else if (black->rooks & (1ULL << i)) {
-			positionalValue -= rookSquareTableBlack[i];
+			positionalValue -= ROOK_SQUARE_TABLE_BLACK[i];
 		}
 		else if (white->queens & (1ULL << i)) {
-			positionalValue += queenSquareTableWhite[i];
+			positionalValue += QUEEN_SQUARE_TABLE_WHITE[i];
 		}
 		else if (black->queens & (1ULL << i)) {
-			positionalValue -= queenSquareTableBlack[i];
+			positionalValue -= QUEEN_SQUARE_TABLE_BLACK[i];
 		}
 		else if (white->king & (1ULL << i)) {
 			if (countBits(white->pawns) + countBits(black->pawns) > 10) {
-				positionalValue += kingSquareTableOpeningWhite[i];
+				positionalValue += KING_SQUARE_TABLE_WHITE_OP[i];
 			}
 			else {
-				positionalValue += kingSquareTableEndgameWhite[i];
+				positionalValue += KING_SQUARE_TABLE_ENDGAME[i];
 			}
 		}
 		else if (black->king & (1ULL << i)) {
 			if (countBits(white->pawns) + countBits(black->pawns) > 10) {
-				positionalValue -= kingSquareTableOpeningBlack[i];
+				positionalValue -= KING_SQUARE_TABLE_BLACK_OP[i];
 			}
 			else {
-				positionalValue -= kingSquareTableEndgameBlack[i];
+				positionalValue -= KING_SQUARE_TABLE_ENDGAME[i];
 			}
 		}
 	}

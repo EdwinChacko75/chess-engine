@@ -8,6 +8,8 @@
 #include "../include/gamestate.h"
 #include "../include/evaluate.h"
 #include "../include/move_pick.h"
+#include "../include/transposition_table.h"
+
 
 
 
@@ -19,6 +21,9 @@
 
 int main()
 {
+    // Initialize the transposition table
+    initializeTable(64);
+
     unsigned int numThreads = std::thread::hardware_concurrency();
 
     crow::App<crow::CORSHandler> app;
@@ -77,7 +82,7 @@ int main()
         int prunedBranches = 0;
         int zorbistedNodes = 0;
         int computedMove;
-        
+
         Move bestMove;
         if ((gameState & turnMask) >> 4) {
             bestMove = searchBestMove(white, black, gameState, nodesVisitied, prunedBranches);

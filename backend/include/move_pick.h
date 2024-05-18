@@ -1,8 +1,10 @@
 #ifndef MOVE_PICK_H
 #define MOVE_PICK_H
 
+#include "./transposition_table.h"
 #include "./move_generation.h"
 #include "./evaluate.h"
+#include <algorithm>
 using PositionHistory = std::vector<std::string>;
 
 

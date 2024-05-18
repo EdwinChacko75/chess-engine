@@ -24,8 +24,6 @@ constexpr Bitboard AFile = 0x101010101010101ULL;
 constexpr Bitboard FirstRank = 0x0000000000000FFULL;
 constexpr Bitboard EighthRank = 0xFF00000000000000ULL;
 
-
-
 #ifdef _MSC_VER
 // Microsoft Visual C++ compiler
 #include <intrin.h>
@@ -137,6 +135,8 @@ inline int pieceTypeOnSq(const PlayerBitboard& allies, const PlayerBitboard& opp
     }
     return 0;
 }
+
+
 // Only for developments
 void printBoards(const PlayerBitboard& white, const PlayerBitboard& black);
 void printBoard(const Bitboard bitboard);
