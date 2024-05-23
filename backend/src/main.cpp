@@ -85,10 +85,10 @@ int main()
 
         Move bestMove;
         if ((gameState & turnMask) >> 4) {
-            bestMove = searchBestMove(white, black, gameState, nodesVisitied, prunedBranches);
+            bestMove = searchBestMove(white, black, gameState, nodesVisitied, prunedBranches, zorbistedNodes);
         }
         else {
-            bestMove = searchBestMove(black, white, gameState, nodesVisitied, prunedBranches);
+            bestMove = searchBestMove(black, white, gameState, nodesVisitied, prunedBranches, zorbistedNodes);
         }
         std::cout << "Best Move: " << (bestMove & sourceMask) << " to " << ((bestMove & destinationMask)>>6) << "; " << bestMove << std::endl;
 
@@ -99,6 +99,7 @@ int main()
             << duration.count() << " milliseconds" << std::endl;
         std::cout << "Nodes visited: " << nodesVisitied << std::endl;
         std::cout << "Pruned branches: " << prunedBranches << std::endl;
+        std::cout << "Zorbisted nodes: " << zorbistedNodes << std::endl;
 
        
         //std::cout << "is set: " << countBits(gameBoards.whitePawns) << std::endl;
