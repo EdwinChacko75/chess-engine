@@ -108,11 +108,11 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 	ZobristHash zobristHash = generateZorbistHash(allies, opponents, gameState);
 	int depth = (gameState & depthMask) >> 5;
 	
-	TTEntry* entry = nullptr;
+	/*TTEntry* entry = nullptr;
 	if (probeEntry(zobristHash, entry, depth)  && entry->bound == BOUND_EXACT) {
 		cached++;
 		return entry->bestMove;
-	}
+	}*/
 
 	Move bestMove;
 	int bestScore = INT_MIN;
@@ -138,7 +138,7 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 	}
 	
 	
-	storeEntry(zobristHash, depth, bestScore,  BOUND_EXACT, bestMove);
+	//storeEntry(zobristHash, depth, bestScore,  BOUND_EXACT, bestMove);
 
 	delete[] moves;
 	return bestMove;
@@ -150,7 +150,7 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 	int alphaOriginal = alpha;
 	int depth = (gameState & depthMask) >> 5;	
 	
-	TTEntry* entry = nullptr;
+	/*TTEntry* entry = nullptr;
 	if (  probeEntry(zobristHash, entry, (depth - 1) )  ) {
 		++cached;
 		switch (entry->bound) {
@@ -160,7 +160,7 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 			default: throw std::runtime_error("check TT handling"); exit(69); break;
 		}
 		if (alpha >= beta) return entry->score;
-	}
+	}*/
 	
 	int moveIndex = 0;
 
@@ -201,7 +201,7 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 		}
 	}
 
-	storeEntry(zobristHash, depth, maxEval, (alpha >= beta ? BOUND_LOWERBOUND : (alphaOriginal != alpha ? BOUND_EXACT : BOUND_UPPERBOUND)), bestMove_TT);
+	//storeEntry(zobristHash, depth, maxEval, (alpha >= beta ? BOUND_LOWERBOUND : (alphaOriginal != alpha ? BOUND_EXACT : BOUND_UPPERBOUND)), bestMove_TT);
 
 	delete[] moves;
 	return maxEval;
