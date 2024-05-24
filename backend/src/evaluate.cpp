@@ -1,12 +1,15 @@
 #include "../include/evaluate.h"
 
+using namespace PieceValues;
+
 int evaluate(const PlayerBitboard& allies, const PlayerBitboard& opponents) {
-	int pieceValue = 100 * (countBits(allies.pawns) - countBits(opponents.pawns))
-		+ 300 * (countBits(allies.knights) - countBits(opponents.knights))
-		+ 300 * (countBits(allies.bishops) - countBits(opponents.bishops))
-		+ 500 * (countBits(allies.rooks) - countBits(opponents.rooks))
-		+ 900 * (countBits(allies.queens) - countBits(opponents.queens))
-		+ 10000 * (countBits(allies.king) - countBits(opponents.king));
+	int pieceValue = pawnValue * (countBits(allies.pawns) - countBits(opponents.pawns))
+		+ knightValue * (countBits(allies.knights) - countBits(opponents.knights))
+		+ bishopValue * (countBits(allies.bishops) - countBits(opponents.bishops))
+		+ rookValue * (countBits(allies.rooks) - countBits(opponents.rooks))
+		+ queenValue * (countBits(allies.queens) - countBits(opponents.queens))
+		+ kingValue * (countBits(allies.king) - countBits(opponents.king));
+
 
 	const PlayerBitboard* white;
 	const PlayerBitboard* black;
@@ -68,6 +71,6 @@ int evaluate(const PlayerBitboard& allies, const PlayerBitboard& opponents) {
 			}
 		}
 	}
-	//std::cout << allies.isWhite << " " << perspectiveCompensation << " " << positionalValue<<'\n';
+
 	return (white->isWhite ? 1 : -1) * (positionalValue) + pieceValue;
 }

@@ -8,6 +8,7 @@
 using PositionHistory = std::vector<std::string>;
 
 
+
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 

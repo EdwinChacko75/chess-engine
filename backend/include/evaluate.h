@@ -157,6 +157,16 @@ constexpr int KING_SQUARE_TABLE_ENDGAME[64] = {
 	-50, -40, -30, -20, -20, -30, -40, -50   
 };
 
+namespace PieceValues {
+	constexpr int pawnValue = 100;
+	constexpr int knightValue = 320;
+	constexpr int bishopValue = 330;
+	constexpr int rookValue = 500;
+	constexpr int queenValue = 900;
+	constexpr int kingValue = 20000;
+}
+
+
 int evaluate(const PlayerBitboard& allies, const PlayerBitboard& opponents);
 
 #endif 
