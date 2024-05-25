@@ -338,7 +338,7 @@ bool isKingInCheck(const PlayerBitboard& allies, const PlayerBitboard& opponents
 		opponents.bishops & diagonalAttacks;
 
 }
-
+// deprecated since we do this in negamax
 void filterLegalMoves(const PlayerBitboard& ally, const PlayerBitboard& opponent, Move*& moves, const GameState gameState, int& size, int& moveIndex) {
 	
 	PlayerBitboard allies = ally;
@@ -375,7 +375,7 @@ Move* generateMoves(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 	generateRookMoves(allies, opponents, moves, gameState, size, moveIndex);
 	generateQueenMoves(allies, opponents, moves, gameState, size, moveIndex);
 
-	filterLegalMoves(allies, opponents, moves, gameState, size, moveIndex);
+	//filterLegalMoves(allies, opponents, moves, gameState, size, moveIndex);
 
 	//printMoves(allies, opponents, moves, moveIndex);
 	return moves;
