@@ -24,6 +24,7 @@ int main()
     // Initialize the transposition table
     initializeTable(64);
 
+
     unsigned int numThreads = std::thread::hardware_concurrency();
 
     crow::App<crow::CORSHandler> app;
@@ -95,11 +96,15 @@ int main()
         
         auto stop = std::chrono::high_resolution_clock::now();
         auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+        auto time = duration.count();
         std::cout << "Time taken: "
             << duration.count() << " milliseconds" << std::endl;
         std::cout << "Nodes visited: " << nodesVisitied << std::endl;
         std::cout << "Pruned branches: " << prunedBranches << std::endl;
         std::cout << "Zorbisted nodes: " << zorbistedNodes << std::endl;
+        if (time > 0) {
+            std::cout << "Nodes Per Second: " << ((nodesVisitied / duration.count()) * 1000) << std::endl;
+        }
 
        
         //std::cout << "is set: " << countBits(gameBoards.whitePawns) << std::endl;

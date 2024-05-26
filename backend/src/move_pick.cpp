@@ -7,6 +7,7 @@
 using std::cout;
 using std::endl;
 
+std::array<std::array<Move, NumKillerMoves>, MaxDepth> killerMoves = { 0 };
 
 void printHistory(const PositionHistory& positionHistory) {
 	for (int i = 0; i < positionHistory.size(); i++) {
@@ -102,10 +103,13 @@ void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move) {
 	}
 
 }
-void orderMoves(Move* moves, const int moveIndex) {
-	std::sort(moves, moves + moveIndex, [](Move a, Move b) {
+void orderMoves(Move* moves, const int moveIndex, int depth) {
+	std::sort(moves, moves + moveIndex, [depth](Move a, Move b) {
 		bool aIsCapture = a & captureMask;
 		bool bIsCapture = b & captureMask;
+
+		bool aIsKiller = (a == killerMoves[depth][0] || a == killerMoves[depth][1]);
+		bool bIsKiller = (b == killerMoves[depth][0] || b == killerMoves[depth][1]);
 
 		if (aIsCapture && bIsCapture) {
 			return MVV_LVA_TABLE[(a & pieceTypeMask) >> 19][(a & capturedPieceMask) >> 23] >
@@ -117,16 +121,45 @@ void orderMoves(Move* moves, const int moveIndex) {
 		else if (!aIsCapture && bIsCapture) {
 			return false;
 		}
-		else {
-			return false;
+		else  {
+			if (aIsKiller && !bIsKiller) {
+				return true;
+			}
+			else if (!aIsKiller && bIsKiller) {
+				return false;
+			}
+			else {
+				return false;
+			}
 		}
-	});
+		});
+}
+
+void addKillerMove(Move move, int depth) {
+	if (move != killerMoves[depth][0]) {
+		killerMoves[depth][1] = killerMoves[depth][0];
+		killerMoves[depth][0] = move;
+	}
+
+	/*for (int i = 0; i < NumKillerMoves; i++) {
+		if (killerMoves[depth][i] == 0) {
+			for (int j = NumKillerMoves - 1; j > 0; j--) {
+				killerMoves[depth][j] = killerMoves[depth][j - 1];
+			}
+			killerMoves[depth][0] = move;
+			
+			return;
+		}
+		
+	}*/
+	
 }
 
 Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, int& counter, int& pruned, int& cached) {
 	startNewSearch();
 	ZobristHash zobristHash = generateZorbistHash(allies, opponents, gameState);
 	int depth = (gameState & depthMask) >> 5;
+
 	
 	TTEntry* entry = nullptr;
 	if (probeEntry(zobristHash, entry, depth)  && entry->bound == BOUND_EXACT) {
@@ -139,7 +172,7 @@ Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const Gam
 
 	int moveIndex = 0;
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
-	orderMoves(moves, moveIndex);
+	orderMoves(moves, moveIndex, depth);
 	cout << "zorbist hash: " << zobristHash << endl;
 
 	for (int i = 0; i < moveIndex; i++) {
@@ -195,7 +228,8 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 	Move bestMove_TT = 0;
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
 
-	orderMoves(moves, moveIndex);
+	orderMoves(moves, moveIndex, depth);
+
 	if (moveIndex == 0 && isKingInCheck(allies, opponents, gameState)) {
 		delete[] moves;
 
@@ -230,6 +264,7 @@ int negamax(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& 
 		if (alpha >= beta) {
 			pruned++;
 			bestMove_TT = moves[i];
+			addKillerMove(moves[i], depth);
 			break;
 		}
 	}

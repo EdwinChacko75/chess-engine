@@ -133,6 +133,7 @@ ZobristHash generateZorbistHash(const PlayerBitboard& allies, const PlayerBitboa
 	return hash;
 }
 
+// use extern later
 std::vector<TTEntry> table;
 size_t tableSize;
 size_t currentGeneration;

@@ -5,8 +5,16 @@
 #include "./move_generation.h"
 #include "./evaluate.h"
 #include <algorithm>
+#include <array>
 using PositionHistory = std::vector<std::string>;
 
+constexpr int MaxDepth = 32;
+constexpr int NumKillerMoves = 2;
+
+
+extern std::array<std::array<Move, NumKillerMoves>, MaxDepth> killerMoves;
+
+//inline std::array<std::array<Move, NumKillerMoves>, MaxDepth> killerMoves = { 0 };
 
 constexpr int MVV_LVA_TABLE[6][5] = {
     {
@@ -53,7 +61,7 @@ constexpr int MVV_LVA_TABLE[6][5] = {
 	}
 };
 
-void orderMoves(Move* moves, const int moveIndex);
+void orderMoves(Move* moves, const int moveIndex, int depth);
 
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
