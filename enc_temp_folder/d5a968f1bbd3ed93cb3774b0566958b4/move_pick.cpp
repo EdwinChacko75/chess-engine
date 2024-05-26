@@ -121,7 +121,7 @@ void orderMoves(Move* moves, const int moveIndex, int depth) {
 		bool aIsKiller = (a == killerMoves[depth][0] || a == killerMoves[depth][1]);
 		bool bIsKiller = (b == killerMoves[depth][0] || b == killerMoves[depth][1]);
 		
-		if (aIsKiller && !bIsKiller) {
+		 if (aIsKiller && !bIsKiller) {
 			return true;
 		}
 		else if (!aIsKiller && bIsKiller) {

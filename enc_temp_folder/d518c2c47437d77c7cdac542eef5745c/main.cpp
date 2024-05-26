@@ -166,7 +166,6 @@ int main()
             printBoard(FORWARD_PAWN_PUSHES[i]);
 
         }*/
-        // can remove this later if deemed necessary
         historyTable = { 0 };
         return res;
             });

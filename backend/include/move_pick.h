@@ -13,6 +13,7 @@ constexpr int NumKillerMoves = 2;
 
 
 extern std::array<std::array<Move, NumKillerMoves>, MaxDepth> killerMoves;
+extern std::array<std::array<int, 64>, 64> historyTable;
 
 //inline std::array<std::array<Move, NumKillerMoves>, MaxDepth> killerMoves = { 0 };
 
