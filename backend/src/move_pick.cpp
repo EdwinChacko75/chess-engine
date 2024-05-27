@@ -156,49 +156,58 @@ void addKillerMove(Move move, int depth) {
 	
 }
 
+
 Move searchBestMove(PlayerBitboard& allies, PlayerBitboard& opponents, const GameState& gameState, int& counter, int& pruned, int& cached) {
 	startNewSearch();
 	ZobristHash zobristHash = generateZorbistHash(allies, opponents, gameState);
 	int depth = (gameState & depthMask) >> 5;
 
-	
 	TTEntry* entry = nullptr;
 	if (probeEntry(zobristHash, entry, depth)  && entry->bound == BOUND_EXACT) {
 		cached++;
 		return entry->bestMove;
 	}
 
-	Move bestMove;
+	Move bestMove = 0;
 	int bestScore = INT_MIN;
-
+	int previousBestMoveIndex = -1;
 	int moveIndex = 0;
 	Move* moves = generateMoves(allies, opponents, gameState, moveIndex);
 	orderMoves(moves, moveIndex, depth);
 	cout << "zorbist hash: " << zobristHash << endl;
+	for (int iterativeDepth = 1; iterativeDepth <= depth; iterativeDepth++) {
+		GameState iterativeGameState = gameState & ~depthMask;
+		iterativeGameState |= iterativeDepth << 5;
+		cout << "iterative depth: " << iterativeDepth << endl;
+		if (previousBestMoveIndex != -1) {
+			Move temp = moves[previousBestMoveIndex];
+			moves[previousBestMoveIndex] = moves[0];
+			moves[0] = temp;
+		}
 
-	for (int i = 0; i < moveIndex; i++) {
-		GameState copyGameState = gameState;
-		makeMove(allies, opponents, moves[i]);
-		updateGameState(copyGameState, moves[i]);
-		
-		if (isKingInCheck(allies, opponents, copyGameState) && ((moves[i] & capturedPieceMask) >> 23) != 6) {
+		for (int i = 0; i < moveIndex; i++) {
+			GameState copyGameState = iterativeGameState;
+			makeMove(allies, opponents, moves[i]);
+			updateGameState(copyGameState, moves[i]);
+
+			if (isKingInCheck(allies, opponents, copyGameState) && ((moves[i] & capturedPieceMask) >> 23) != 6) {
+				unMakeMove(allies, opponents, moves[i]);
+				continue;
+			}
+
+			int eval = -negamax(opponents, allies, copyGameState, true, INT_MIN, INT_MAX, 1, counter, pruned, cached);
+
 			unMakeMove(allies, opponents, moves[i]);
-			continue;
+
+			if (eval > bestScore) {
+				bestScore = eval;
+				bestMove = moves[i];
+				previousBestMoveIndex = i;
+			}
 		}
 
-		int eval = -negamax(opponents, allies, copyGameState, true, INT_MIN, INT_MAX, 1, counter, pruned, cached);
-		
-		unMakeMove(allies, opponents, moves[i]);
-
-		if (eval > bestScore) {
-			bestScore = eval;
-			bestMove = moves[i];
-		}
+		storeEntry(zobristHash, iterativeDepth, bestScore, BOUND_EXACT, bestMove);
 	}
-	
-	
-	storeEntry(zobristHash, depth, bestScore,  BOUND_EXACT, bestMove);
-
 	delete[] moves;
 	return bestMove;
 }

@@ -63,6 +63,7 @@ constexpr int MVV_LVA_TABLE[6][5] = {
 };
 
 void orderMoves(Move* moves, const int moveIndex, int depth);
+void addKillerMove(Move move, int depth);
 
 void makeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
 void unMakeMove(PlayerBitboard& allies, PlayerBitboard& opponents, Move move);
