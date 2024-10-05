@@ -13,7 +13,9 @@
       "variables": [
         {
           "name": "CMAKE_CXX_COMPILER",
-          "value": "cl.exe"
+       
+          "value": "clang++.exe"
+
         }
       ]
     }

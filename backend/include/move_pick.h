@@ -5,7 +5,10 @@
 #include "./move_generation.h"
 #include "./evaluate.h"
 #include <algorithm>
-#include <array>
+#include <iostream>
+#include <string>
+
+
 using PositionHistory = std::vector<std::string>;
 
 constexpr int MaxDepth = 32;

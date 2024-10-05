@@ -72,5 +72,5 @@ int evaluate(const PlayerBitboard& allies, const PlayerBitboard& opponents) {
 	
 	}
 
-	return (white->isWhite ? 1 : -1) * (positionalValue) + pieceValue;
+	return (white->isWhite ? -1 : 1) * (positionalValue) + pieceValue;
 }

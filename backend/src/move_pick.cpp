@@ -1,7 +1,5 @@
 #include "../include/move_pick.h"
-#include <iostream>
-#include <string>
-#include <algorithm>
+#include <climits>
 
 
 using std::cout;
